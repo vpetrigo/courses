@@ -5,7 +5,7 @@
 using Graph_t = typename std::vector<std::vector<unsigned short>>;
 using Visited_t = typename std::vector<bool>;
 
-void build_adj_list(Graph_t& graph, unsigned int input_size) {
+void build_adj_list(Graph_t &graph, unsigned int input_size) {
   for (std::size_t i = 0; i < input_size; ++i) {
     unsigned int v1, v2;
 
@@ -15,17 +15,17 @@ void build_adj_list(Graph_t& graph, unsigned int input_size) {
   }
 }
 
-void explore(const Graph_t& graph, unsigned int v, Visited_t& visited) {
+void explore(const Graph_t &graph, unsigned int v, Visited_t &visited) {
   visited[v] = true;
 
-  for (const auto& w : graph[v]) {
+  for (const auto &w : graph[v]) {
     if (!visited[w]) {
       explore(graph, w, visited);
     }
   }
 }
 
-bool is_path_exists(const Graph_t& graph, unsigned int u, unsigned int v) {
+bool is_path_exists(const Graph_t &graph, unsigned int u, unsigned int v) {
   Visited_t visited(graph.size(), false);
 
   explore(graph, u - 1, visited);

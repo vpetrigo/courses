@@ -1,0 +1,4 @@
+add_subdirectory(week1/graph_components)
+add_subdirectory(week1/search_path)
+add_subdirectory(week2/search-cycle)
+add_subdirectory(week2/top-sort)
