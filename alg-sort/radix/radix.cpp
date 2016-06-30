@@ -4,7 +4,7 @@
 #include <vector>
 
 template <typename ForwardIt>
-std::vector<unsigned> radix_sort(ForwardIt begin, ForwardIt end, int base = 2);
+std::vector<unsigned int> radix_sort(ForwardIt begin, ForwardIt end, int base = 2);
 
 template <typename T>
 T get_digit(const T num, const int div, const int base);
@@ -24,7 +24,7 @@ std::size_t get_num_len(T num) {
 int main() {
     int n, base;
     std::cin >> n >> base;
-    std::vector<unsigned> input_num(n);
+    std::vector<unsigned int> input_num(n);
 
     for (auto& e : input_num) {
         std::cin >> e;
@@ -38,8 +38,8 @@ int main() {
 template <typename ForwardIt>
 std::vector<unsigned> radix_sort(ForwardIt begin, ForwardIt end, int base) {
     std::vector<unsigned> count(base);
-    std::vector<unsigned> sorted(begin, end);
-    std::vector<unsigned> temp(sorted.size(), 0);
+    std::vector<unsigned int> sorted(begin, end);
+    std::vector<unsigned int> temp(sorted.size(), 0);
     int div = 1;
     auto max_len = get_num_len(*std::max_element(begin, end));
     
