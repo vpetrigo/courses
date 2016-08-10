@@ -1,9 +1,6 @@
 #include <iostream>
 #include <queue>
 #include <algorithm>
-#include <vector>
-#include <utility>
-#include <limits>
 #include <functional>
 
 using WeightType = unsigned;
@@ -21,7 +18,7 @@ bool RelaxEdge(const unsigned u, const unsigned v,
                const WeightType w, DistanceCont &dist,
                PrevCont &prev);
 WeightType Dijkstra(const GraphRepr &graph, const unsigned start_node,
-              const unsigned end_node);
+                    const unsigned end_node);
 void InitDijkstraConts(PrevCont &prev, DistanceCont &dist);
 DijkstraQueue MakeDijkstraQueue(const DistanceCont &dist);
 
@@ -85,7 +82,7 @@ void InitDijkstraConts(PrevCont &prev, DistanceCont &dist) {
 }
 
 WeightType Dijkstra(const GraphRepr &graph, const unsigned start_node,
-              const unsigned end_node) {
+                    const unsigned end_node) {
   PrevCont prev(graph.size());
   DistanceCont dist(graph.size());
   InitDijkstraConts(prev, dist);
