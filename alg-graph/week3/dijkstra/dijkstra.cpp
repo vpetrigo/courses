@@ -4,28 +4,31 @@
 #include <vector>
 #include <utility>
 #include <limits>
+#include <functional>
 
 using WeightType = unsigned;
 using VerticeType = std::pair<unsigned, WeightType>;
-using DistanceType = long;
+using DistanceType = unsigned long;
 using DistanceCont = std::vector<DistanceType>;
 using DistanceCont = std::vector<DistanceType>;
-using PrevCont = std::vector<VerticeType>;
+using PrevCont = std::vector<VerticeType::first_type>;
 using GraphRepr = std::vector<std::vector<VerticeType>>;
-using HeapType = std::pair<DistanceType, VerticeType>;
-using DijkstraQueue = std::priority_queue<HeapType>;
+using HeapType = std::pair<DistanceType, VerticeType::first_type>;
+using DijkstraQueue = std::priority_queue<HeapType, std::vector<HeapType>, std::greater<HeapType>>;
 
 GraphRepr create_graph(int v, int e);
-bool RelaxEdge(const VerticeType& v, const VerticeType& u,
+bool RelaxEdge(const unsigned u, const unsigned v,
                const WeightType w, DistanceCont &dist,
                PrevCont &prev);
 WeightType Dijkstra(const GraphRepr &graph, const unsigned start_node,
               const unsigned end_node);
 void InitDijkstraConts(PrevCont &prev, DistanceCont &dist);
-DijkstraQueue MakeDijkstraQueue(DistanceCont &dist);
+DijkstraQueue MakeDijkstraQueue(const DistanceCont &dist);
 
 int main() {
   int V, E;
+  constexpr auto INF = std::numeric_limits<DistanceType>::max();
+  constexpr auto NO_PATH = -1;
 
   std::cin >> V >> E;
 
@@ -34,7 +37,14 @@ int main() {
 
   std::cin >> start >> end;
 
-  std::cout << Dijkstra(graph, start, end) << std::endl;
+  auto result = Dijkstra(graph, start - 1, end - 1);
+  if (result != INF) {
+    std::cout << result;
+  }
+  else {
+    std::cout << NO_PATH;
+  }
+  std::cout << std::endl;
 }
 
 GraphRepr create_graph(int v, int e) {
@@ -52,12 +62,15 @@ GraphRepr create_graph(int v, int e) {
   return g;
 }
 
-bool RelaxEdge(const VerticeType& v, const VerticeType& u,
+bool RelaxEdge(const unsigned u, const unsigned v,
                const WeightType w, DistanceCont &dist,
                PrevCont &prev) {
-  if (dist[v.first] > dist[u.first] + w) {
-    dist[v.first] = dist[u.first] + w;
-    prev[v.first] = u;
+  constexpr auto INF = std::numeric_limits<DistanceType>::max();
+
+  if (!(dist[v] == INF && dist[u] == INF) &&
+      dist[v] > dist[u] + w) {
+    dist[v] = dist[u] + w;
+    prev[v] = u;
     // an edge was relaxed
     return true;
   }
@@ -66,7 +79,7 @@ bool RelaxEdge(const VerticeType& v, const VerticeType& u,
 }
 
 void InitDijkstraConts(PrevCont &prev, DistanceCont &dist) {
-  constexpr auto INIT_VAL = std::numeric_limits<long>::infinity();
+  constexpr auto INIT_VAL = std::numeric_limits<DistanceType>::max();
   std::fill(prev.begin(), prev.end(), INIT_VAL);
   std::fill(dist.begin(), dist.end(), INIT_VAL);
 }
@@ -84,14 +97,14 @@ WeightType Dijkstra(const GraphRepr &graph, const unsigned start_node,
     auto u_vertice = queue.top();
     queue.pop();
 
-    for (const auto &e : graph[u_vertice.second.first]) {
+    for (const auto &e : graph[u_vertice.second]) {
       const auto u_vertice_num = u_vertice.second;
       const auto v_vertice_num = e.first;
       const auto v_vertice_weight = e.second;
 
       if (RelaxEdge(u_vertice_num, v_vertice_num,
                     v_vertice_weight, dist, prev)) {
-        queue.push(std::make_pair(dist[u_vertice_num], u_vertice_num));
+        queue.push(std::make_pair(dist[v_vertice_num], v_vertice_num));
       }
     }
   }
@@ -99,7 +112,7 @@ WeightType Dijkstra(const GraphRepr &graph, const unsigned start_node,
   return dist[end_node];
 }
 
-DijkstraQueue MakeDijkstraQueue(DistanceCont &dist) {
+DijkstraQueue MakeDijkstraQueue(const DistanceCont &dist) {
   DijkstraQueue queue;
 
   for (std::size_t i = 0; i < dist.size(); ++i) {
