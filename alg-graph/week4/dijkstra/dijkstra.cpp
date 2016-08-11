@@ -92,14 +92,19 @@ WeightType Dijkstra(const GraphRepr &graph, const unsigned start_node,
     auto u_vertice = queue.top();
     queue.pop();
 
+    // if we got a vertice with the infinity distance
+    // we probably didn't do anything with it on the previous step.
+    if (dist[u_vertice.second] == INF) {
+      break;
+    }
+
     for (const auto &edge : graph[u_vertice.second]) {
       const auto u_vertice_num = u_vertice.second;
       const auto v_vertice_num = edge.first;
       const auto v_vertice_weight = edge.second;
       // if there is at least one vertice with known distance
       // try to relax an edge between them
-      if (!(dist[u_vertice_num] == INF && dist[v_vertice_num] == INF) &&
-          RelaxEdge(u_vertice_num, v_vertice_num,
+      if (RelaxEdge(u_vertice_num, v_vertice_num,
                     v_vertice_weight, dist, prev)) {
         queue.push(std::make_pair(dist[v_vertice_num], v_vertice_num));
       }
