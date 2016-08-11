@@ -62,10 +62,7 @@ GraphRepr create_graph(int v, int e) {
 bool RelaxEdge(const unsigned u, const unsigned v,
                const WeightType w, DistanceCont &dist,
                PrevCont &prev) {
-  constexpr auto INF = std::numeric_limits<DistanceType>::max();
-
-  if (!(dist[v] == INF && dist[u] == INF) &&
-      dist[v] > dist[u] + w) {
+  if (dist[v] > dist[u] + w) {
     dist[v] = dist[u] + w;
     prev[v] = u;
     // an edge was relaxed
@@ -83,6 +80,7 @@ void InitDijkstraConts(PrevCont &prev, DistanceCont &dist) {
 
 WeightType Dijkstra(const GraphRepr &graph, const unsigned start_node,
                     const unsigned end_node) {
+  constexpr auto INF = std::numeric_limits<DistanceType>::max();
   PrevCont prev(graph.size());
   DistanceCont dist(graph.size());
   InitDijkstraConts(prev, dist);
@@ -94,12 +92,14 @@ WeightType Dijkstra(const GraphRepr &graph, const unsigned start_node,
     auto u_vertice = queue.top();
     queue.pop();
 
-    for (const auto &e : graph[u_vertice.second]) {
+    for (const auto &edge : graph[u_vertice.second]) {
       const auto u_vertice_num = u_vertice.second;
-      const auto v_vertice_num = e.first;
-      const auto v_vertice_weight = e.second;
-
-      if (RelaxEdge(u_vertice_num, v_vertice_num,
+      const auto v_vertice_num = edge.first;
+      const auto v_vertice_weight = edge.second;
+      // if there is at least one vertice with known distance
+      // try to relax an edge between them
+      if (!(dist[u_vertice_num] == INF && dist[v_vertice_num] == INF) &&
+          RelaxEdge(u_vertice_num, v_vertice_num,
                     v_vertice_weight, dist, prev)) {
         queue.push(std::make_pair(dist[v_vertice_num], v_vertice_num));
       }
