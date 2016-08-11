@@ -1,0 +1,8 @@
+# temporary build folder
+build/
+
+# IDEA folders
+.idea/
+
+# VS Code
+.vscode/
