@@ -4,7 +4,6 @@
 
 import sys
 import math
-import heapq
 
 
 def ReadEdges(reader):
@@ -15,41 +14,22 @@ def CreateGraph(num_v, num_e, reader):
     """
     Create graph with @num_v vertices with @num_e edges.
     Read it via the @reader generator
+    For Bellman-Ford algorithm it is enough to store only edges
     """
-    graph = dict(zip((vertice for vertice in range(1, num_v + 1)),
-                     [[] for _ in range(num_v)]))
+    edges = tuple(ReadEdges(reader) for _ in range(num_e))
 
-    for _ in range(num_e):
-        (u, v, w) = ReadEdges(reader)
-        graph[u].append((v, w))
-
-    return graph
+    return edges
 
 
-def BellmanFordNegCycle(graph, start_node):
-    dist = [math.inf for _ in graph]
-    dist[start_node - 1] = 0
-    queue = [(dist[i - 1], i) for i in range(1, len(graph) + 1)]
-    heapq.heapify(queue)
-    counter = 0
+def BellmanFordNegCycle(graph, num_v):
+    dist = [0 for _ in range(num_v)]
 
-    while len(queue) > 0:
-        cur_node = heapq.heappop(queue)
-
-        if (cur_node[0] == math.inf):
-            break
-
-        u = cur_node[1]
-        for v_info in graph[u]:
-            edge_weight = v_info[1]
-            v = v_info[0]
-
-            if (RelaxEdge(u - 1, v - 1, edge_weight, dist)):
-                heapq.heappush(queue, (dist[v - 1], v))
-                if counter == len(graph) + 1:
+    for it in range(num_v + 1):
+        for edge in graph:
+            u, v, w = edge
+            if (RelaxEdge(u - 1, v - 1, w, dist)):
+                if it == num_v:
                     return True
-
-        counter += 1
 
     return False
 
@@ -69,10 +49,8 @@ def main():
     v, e = next(reader)
     graph = CreateGraph(v, e, reader)
 
-    for start_node in range(1, v + 1):
-        if (BellmanFordNegCycle(graph, start_node)):
-            print(1)
-            break
+    if (BellmanFordNegCycle(graph, v)):
+        print(1)
     else:
         print(0)
 
