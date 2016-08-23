@@ -13,7 +13,7 @@ uint_fast64_t convert_to_number(const char *num_repr, size_t size);
 
 int main() {
   uint_fast64_t number = read_number();
-
+  // we have to deal only with numbers from range [1, 9'223'372'036'854'775'807]
   if (number >= 1 && number <= INT64_MAX) {
     printf("%"PRIu32, is_triangseq(number));
   }
@@ -42,15 +42,13 @@ uint32_t is_triangseq(const uint_fast64_t number) {
 }
 
 uint_fast64_t read_number(void) {
+  // read number with intermediate string buffer
   char number_string[NUMSTR_SIZE];
   int result = scanf("%s", number_string);
 
   if (result != EOF) {
-    uint_fast64_t number = convert_to_number(number_string, NUMSTR_SIZE);
-
-    if (number > 0) {
-      return number;
-    }
+    // convert string to number
+    return convert_to_number(number_string, NUMSTR_SIZE);
   }
 
   return 0U;
@@ -64,6 +62,8 @@ uint_fast64_t convert_to_number(const char *num_repr, size_t size) {
   if (result != EOF) {
     sprintf(back_conv_result, "%"PRIuFAST64, number);
     if (strncmp(num_repr, back_conv_result, size) != 0 && *num_repr != '+') {
+      // here we get if the number is exceeded the UINT64_MAX value
+      // or it is negative
       number = 0;
     }
   }
