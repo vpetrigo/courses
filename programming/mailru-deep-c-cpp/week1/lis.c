@@ -5,6 +5,7 @@
 #include <stdlib.h>
 #include <stddef.h>
 #include <ctype.h>
+#include <math.h>
 
 #define MIN_SEQ_SIZE 2
 
@@ -15,7 +16,10 @@ bool check_input(void);
 void test_seq_size(int64_t n);
 void test_seq_ptr(void *seq);
 double *read_sequence(int64_t seq_size);
-void print_sequence(double *seq, size_t size);
+void print_sequence(const double *seq, size_t size);
+uint32_t lis(const double *seq, size_t size, size_t *index);
+void init_dist(uint32_t *dist, size_t size);
+uint32_t find_max(const uint32_t *seq, size_t size);
 
 int main() {
   int64_t N = 0;
@@ -26,6 +30,12 @@ int main() {
     test_seq_size(N);
     test_seq_ptr(sequence);
     print_sequence(sequence, N);
+    size_t index;
+    size_t length = lis(sequence, N, &index);
+
+    if (length > 1) {
+      printf("%" PRIuMAX " %" PRIuMAX, length, index);
+    }
   }
   else {
     puts("[error]");
@@ -40,7 +50,9 @@ bool read_number(const char *fmt, void *num) {
   // example: '4abc' for reading base 10 integer is a bad input
   //          '3.14' for plain integer is a bad input
   //          'asdf' for any number is a bad input
-  if (scanf(fmt, num) != EOF && check_input()) {
+  int read_n = scanf(fmt, num);
+
+  if (read_n != EOF && read_n > 0 && check_input()) {
     return true;
   }
 
@@ -96,11 +108,61 @@ double *read_sequence(int64_t seq_size) {
   return sequence;
 }
 
-void print_sequence(double *seq, size_t size) {
+void print_sequence(const double *seq, size_t size) {
   for (size_t i = 0; i < size; ++i) {
     printf("%lf", seq[i]);
     if (i != size - 1) {
       putchar(' ');
     }
   }
+  puts("");
+}
+
+uint32_t lis(const double *seq, size_t size, size_t *index) {
+  uint32_t *dist = malloc(size * sizeof(uint32_t));
+  assert(dist != NULL);
+  init_dist(dist, size);
+
+  for (size_t i = 1; i < size; ++i) {
+    for (size_t j = 0; j < i; ++j) {
+      if (seq[j] <= seq[i]) {
+        dist[i] = fmax(dist[i], dist[j] + 1);
+      }
+    }
+  }
+
+  printf("Dist: ");
+  for (size_t i = 0; i < size; ++i) {
+    printf("%" PRIu32, dist[i]);
+    if (i != size - 1) {
+      putchar(' ');
+    }
+  }
+  puts("");
+
+  uint32_t max_length = find_max(dist, size);
+  *index = 1;
+
+  free(dist);
+
+  return max_length;
+}
+
+void init_dist(uint32_t *dist, size_t size) {
+  for (size_t i = 0; i < size; ++i) {
+    dist[i] = 1;
+  }
+}
+
+uint32_t find_max(const uint32_t *seq, size_t size) {
+  assert(size > 0);
+  uint32_t max_length = seq[0];
+
+  for (size_t i = 1; i < size; ++i) {
+    if (max_length < seq[i]) {
+      max_length = seq[i];
+    }
+  }
+
+  return max_length;
 }
