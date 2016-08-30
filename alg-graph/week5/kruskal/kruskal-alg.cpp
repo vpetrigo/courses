@@ -19,11 +19,9 @@ class DisjointSet {
   ~DisjointSet() = default;
 
   void MakeSet(value_type element) {
-    if (element > parent.size()) {
-      return;
+    if (element < parent.size()) {
+      parent[element] = element;
     }
-
-    parent[element] = element;
   }
 
   value_type Find(value_type element) {
