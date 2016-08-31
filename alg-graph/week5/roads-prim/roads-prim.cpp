@@ -79,10 +79,13 @@ double calculate_length(const Point& p1, const Point& p2) {
 double minimum_length_path(const Graph& graph) {
   std::srand(std::time(nullptr));
   const auto vertices_q = graph.size();
+  // select a random vertice to start with
   auto rand_v = std::rand() % vertices_q;
   std::vector<TDist> dist(vertices_q, INF);
   dist[rand_v] = 0;
   TQueue queue = init_queue(dist);
+  // helper vector for determining whether a vertice still
+  // in the queue or not
   std::vector<bool> in_queue(vertices_q, true);
 
   while (!queue.empty()) {
@@ -98,7 +101,7 @@ double minimum_length_path(const Graph& graph) {
     }
   }
 
-  auto result = std::accumulate(dist.cbegin(), dist.cend(), 0);
+  auto result = std::accumulate(dist.cbegin(), dist.cend(), 0.0L);
 
   return result;
 }
