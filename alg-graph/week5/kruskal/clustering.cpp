@@ -1,10 +1,10 @@
-#include <iostream>
-#include <iomanip>
+#include <algorithm>
 #include <cassert>
 #include <cmath>
-#include <tuple>
-#include <algorithm>
+#include <iomanip>
+#include <iostream>
 #include <iterator>
+#include <tuple>
 #include "disjoint_set.hpp"
 
 using TPoint = std::pair<int, int>;
@@ -15,7 +15,9 @@ using TEdge = std::tuple<TVertice, TVertice, double>;
 std::vector<TPoint> read_coords(unsigned int n);
 std::vector<TEdge> create_edge_list(const std::vector<TPoint>& coords);
 double calculate_length(const TPoint& p1, const TPoint& p2);
-double make_clusters(const unsigned n, const unsigned k, const std::vector<TEdge>& edges_list);
+// find distance 'd' that all cluster would have at least between each other
+double make_clusters(const unsigned n, const unsigned k,
+                     const std::vector<TEdge>& edges_list);
 
 int main() {
   unsigned n, k;
@@ -26,8 +28,10 @@ int main() {
   auto edges_list = create_edge_list(coords);
 
   std::cin >> k;
-  std::cout << std::fixed << std::setprecision(9) <<
-    make_clusters(n, k, edges_list) << std::endl;
+  // it says that we have number of nodes more than number of clusters
+  assert(n >= k);
+  std::cout << std::fixed << std::setprecision(9)
+            << make_clusters(n, k, edges_list) << std::endl;
 
   return 0;
 }
@@ -55,7 +59,7 @@ std::vector<TEdge> create_edge_list(const std::vector<TPoint>& coords) {
   for (std::size_t i = 0; i < coords_q; ++i) {
     for (std::size_t j = i + 1; j < coords_q; ++j) {
       edges_list.emplace_back(
-        std::make_tuple(i, j, calculate_length(coords[i], coords[j])));
+          std::make_tuple(i, j, calculate_length(coords[i], coords[j])));
     }
   }
   assert(edges_list.size() == edges_q);
@@ -70,24 +74,24 @@ double calculate_length(const TPoint& p1, const TPoint& p2) {
   return std::sqrt(diff1 * diff1 + diff2 * diff2);
 }
 
-double make_clusters(const unsigned n, const unsigned k, const std::vector<TEdge>& edges_list) {
+double make_clusters(const unsigned n, const unsigned k,
+                     const std::vector<TEdge>& edges_list) {
   DisjointSet clusters{n};
   std::vector<TEdge> sorted_edges(edges_list);
   // at first we have dozen of nodes not related to any cluster
   std::size_t clusters_count = n;
-  std::vector<TVertice> nodes_in_cluster(n, 1);
   auto it = std::begin(sorted_edges);
 
   std::sort(std::begin(sorted_edges), std::end(sorted_edges),
-            [](const TEdge& a, const TEdge&b) { return std::get<2>(a) < std::get<2>(b); });
+            [](const TEdge& a, const TEdge& b) {
+              return std::get<2>(a) < std::get<2>(b);
+            });
 
   while (clusters_count != k - 1 && it != std::end(edges_list)) {
     auto u = std::get<0>(*it);
     auto v = std::get<1>(*it);
-    auto cluster1 = clusters.Find(u);
-    auto cluster2 = clusters.Find(v);
 
-    if (cluster1 != cluster2) {
+    if (clusters.Find(u) != clusters.Find(v)) {
       --clusters_count;
       clusters.Unite(u, v);
     }
