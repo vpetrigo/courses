@@ -4,5 +4,8 @@ build/
 # IDEA folders
 .idea/
 
+# Clang precompiled headers
+.stdafx.c*
+
 # VS Code
 .vscode/
