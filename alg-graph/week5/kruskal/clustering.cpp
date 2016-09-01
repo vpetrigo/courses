@@ -24,9 +24,9 @@ int main() {
 
   auto coords = read_coords(n);
   auto edges_list = create_edge_list(coords);
-  
+
   std::cin >> k;
-  std::cout << std::fixed << std::setprecision(9) << 
+  std::cout << std::fixed << std::setprecision(9) <<
     make_clusters(n, k, edges_list) << std::endl;
 
   return 0;
@@ -73,39 +73,29 @@ double calculate_length(const TPoint& p1, const TPoint& p2) {
 double make_clusters(const unsigned n, const unsigned k, const std::vector<TEdge>& edges_list) {
   DisjointSet clusters{n};
   std::vector<TEdge> sorted_edges(edges_list);
-  std::size_t clusters_count = 0;
-  constexpr auto UNKNOWN_CLUSTER = 256U;
-  TVertice prev_cluster = UNKNOWN_CLUSTER;
-  bool loop_found = false;
+  // at first we have dozen of nodes not related to any cluster
+  std::size_t clusters_count = n;
+  std::vector<TVertice> nodes_in_cluster(n, 1);
   auto it = std::begin(sorted_edges);
-  
-  std::sort(std::begin(sorted_edges), std::end(sorted_edges), 
+
+  std::sort(std::begin(sorted_edges), std::end(sorted_edges),
             [](const TEdge& a, const TEdge&b) { return std::get<2>(a) < std::get<2>(b); });
 
-  std::for_each(std::begin(sorted_edges), std::end(sorted_edges), [](const TEdge& e) {
-    std::cout << "U: " << std::get<0>(e) << " V: " << std::get<1>(e) <<
-      " W: " << std::get<2>(e) << std::endl; 
-  });
-
-  while (clusters_count <= k && it != std::end(edges_list)) {
+  while (clusters_count != k - 1 && it != std::end(edges_list)) {
     auto u = std::get<0>(*it);
     auto v = std::get<1>(*it);
     auto cluster1 = clusters.Find(u);
     auto cluster2 = clusters.Find(v);
 
-    std::cout << "prev cluster: " << prev_cluster << std::endl;
-    if (prev_cluster == UNKNOWN_CLUSTER || cluster1 != cluster2) {
-      if (cluster1 != prev_cluster && cluster2 != prev_cluster) {
-        ++clusters_count;
-      }
+    if (cluster1 != cluster2) {
+      --clusters_count;
       clusters.Unite(u, v);
-      prev_cluster = clusters.Find(u);
     }
-    std::cout << "clusters: " << clusters_count << std::endl;
-    std::cout << "prev cluster: " << prev_cluster << std::endl;
 
     ++it;
   }
-  
-  return std::get<2>(*it);
+
+  // return distance from the previous edge as it violate the necessary
+  // clusters number
+  return std::get<2>(*(it - 1));
 }
