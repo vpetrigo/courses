@@ -37,7 +37,7 @@ bool Explore(const GraphRepr& graph, const int vertice,
     auto& current_vertice = processing_stack.top();
 
     if (graph[current_vertice.first].empty() ||
-        current_vertice.second == std::cend(graph[current_vertice.first])) {
+        current_vertice.second == std::end(graph[current_vertice.first])) {
       // there are no ways from the current vertice
       (*visited_list)[current_vertice.first] = VerticeStatus::visited;
       processing_stack.pop();
