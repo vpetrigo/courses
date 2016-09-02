@@ -3,11 +3,13 @@
 
 import sys
 
+
 # naive adjacency list
-def build_adj_list(reader, n):
+def build_adj_list(reader, n, m):
     adj_list = [[] for i in range(n)]
 
-    for v1, v2 in reader:
+    for _ in range(m):
+        v1, v2 = next(reader)
         adj_list[v1 - 1].append(v2 - 1)
         adj_list[v2 - 1].append(v1 - 1)
 
@@ -42,7 +44,7 @@ def test():
 def main():
     reader = (tuple(map(int, line.split())) for line in sys.stdin)
     n, m = next(reader)
-    adj_list = build_adj_list(reader, n)
+    adj_list = build_adj_list(reader, n, m)
 
     ans = dfs(adj_list)
     print(ans)

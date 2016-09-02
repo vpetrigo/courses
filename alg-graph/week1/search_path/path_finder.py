@@ -39,8 +39,8 @@ def test():
 def main():
     reader = (tuple(map(int, line.split())) for line in sys.stdin)
     n, m = next(reader)
-    u, v = next(reader)
     graph = build_adj_list(reader, n)
+    u, v = next(reader)
 
     ans = 1 if is_path_exists(graph, u - 1, v - 1) else 0
     print(ans)

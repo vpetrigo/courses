@@ -10,8 +10,8 @@ void build_adj_list(Graph_t &graph, unsigned int input_size) {
     unsigned int v1, v2;
 
     std::cin >> v1 >> v2;
-    graph[v1 - 1].push_back(v2 - 1);
-    graph[v2 - 1].push_back(v1 - 1);
+    graph[v1 - 1].emplace_back(v2 - 1);
+    graph[v2 - 1].emplace_back(v1 - 1);
   }
 }
 
@@ -38,11 +38,11 @@ int main() {
   unsigned int u, v;
 
   std::cin >> n >> m;
-  std::cin >> u >> v;
-
+  
   Graph_t graph_repr(n);
 
   build_adj_list(graph_repr, m);
+  std::cin >> u >> v;
   std::cout << is_path_exists(graph_repr, u, v) << std::endl;
 
   return 0;
