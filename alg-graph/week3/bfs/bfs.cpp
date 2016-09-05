@@ -66,9 +66,9 @@ DistRepr bfs(const GraphRepr &graph, VerticeType from, VerticeType to) {
     }
   }
 
-  if (dist[to] != -1) {
-    PrintShortestPath(prev, from, to);
-  }
+  // if (dist[to] != -1) {
+  //   PrintShortestPath(prev, from, to);
+  // }
 
   return dist;
 }

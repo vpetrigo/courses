@@ -15,7 +15,7 @@ using VerticeColors = std::vector<VerticeColor>;
 
 GraphRepr create_graph(int v, int e);
 // modified BFS for checking whether a graph is bipartite or not
-bool bfs(const GraphRepr &graph, VerticeType from, VisitedVertices &visited);
+bool bfs(const GraphRepr &graph, VerticeType from, VisitedVertices &visited, VerticeColors& colors);
 void PrintShortestPath(const PrevRepr &prev, VerticeType from, VerticeType to);
 void ColorVertice(const VerticeType &v, const VerticeType &prev_v,
                   VerticeColors &colors);
@@ -27,10 +27,11 @@ int main() {
 
   auto graph = create_graph(n, m);
   VisitedVertices visited(n);
+  VerticeColors colors(graph.size(), VerticeColor::BLACK);
   bool bipartite = true;
 
   for (std::size_t i = 0; i < n && !visited[i]; ++i) {
-    if (!visited[i] && !bfs(graph, i, visited)) {
+    if (!bfs(graph, i, visited, colors)) {
       bipartite = false;
     }
   }
@@ -62,17 +63,11 @@ GraphRepr create_graph(int v, int e) {
   return g;
 }
 
-bool bfs(const GraphRepr &graph, VerticeType from, VisitedVertices &visited) {
+bool bfs(const GraphRepr &graph, VerticeType from, VisitedVertices &visited, VerticeColors& colors) {
   std::queue<VerticeType> queue;
-  DistRepr dist(graph.size(), -1);
-  VerticeColors colors(graph.size(), VerticeColor::BLACK);
-  PrevRepr prev(graph.size());
-  constexpr auto INIT_LEVEL = 0U;
   constexpr auto INIT_COLOR = VerticeColor::WHITE;
 
   queue.push(from);
-  prev[from] = from;
-  dist[from] = INIT_LEVEL;
   colors[from] = INIT_COLOR;
 
   while (!queue.empty()) {
@@ -81,14 +76,12 @@ bool bfs(const GraphRepr &graph, VerticeType from, VisitedVertices &visited) {
     queue.pop();
 
     for (const auto &e : graph[cur_node]) {
-      if (dist[e] == -1) {
+      if (!visited[e]) {
         queue.push(e);
-        prev[e] = cur_node;
-        dist[e] = dist[cur_node] + 1;
         ColorVertice(e, cur_node, colors);
       }
       else if (colors[e] == colors[cur_node]) {
-        // have same colored node on both ends of an edge
+        // have same colored nodes on both ends of an edge
         return false;
       }
     }
