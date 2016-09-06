@@ -50,7 +50,7 @@ void explore(const GraphRepr &graph, int vertice, std::vector<VerticeStatus>& vi
       if (visited[*processing_vertice.second] ==
           VerticeStatus::unvisited) {
         process_stack.emplace(std::make_pair(
-            *processing_vertice.second,std::begin(graph[*processing_vertice.second])));
+            *processing_vertice.second, std::begin(graph[*processing_vertice.second])));
         pre[*processing_vertice.second] = time++;
       }
 
