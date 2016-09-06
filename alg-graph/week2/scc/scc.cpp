@@ -76,39 +76,36 @@ void explore(const GraphRepr& graph, int vertice, std::vector<VerticeStatus>& vi
     ProcessStack proc_stack;
 
     proc_stack.push(std::make_pair(vertice, graph[vertice].cbegin()));
+    if (time_info != nullptr && time != nullptr) {
+      (*time_info)[vertice].first = (*time)++;
+    }
 
     while (!proc_stack.empty()) {
-        auto proc_vertice = proc_stack.top();
+        auto& proc_vertice = proc_stack.top();
+        auto& v_num = proc_vertice.first;
+        auto& v_neighbour_it = proc_vertice.second;
 
-        if (visited[proc_vertice.first]) {
-            std::cout << "PV: " << proc_vertice.first + 1;
-            if (time) {
-                std::cout << " pre time: " << *time;
-            }
-            std::cout << std::endl;
-            visited[proc_vertice.first] = true;
-            // fill previsited time
-            if (time_info && time) {
-                (*time_info)[proc_vertice.first].first = (*time)++;
-            }
-
-            for (const auto& neighbour : graph[proc_vertice.first]) {
-                if (!visited[neighbour]) {
-                    proc_stack.push(std::make_pair(neighbour, graph[neighbour].cbegin()));
-                }
-            }
+        visited[v_num] = VerticeStatus::PROCESSING;
+        if (graph[v_num].empty() || v_neighbour_it == graph[v_num].cend()) {
+          // there are no neighbours or we have processed all neighbour list
+          // of the current node
+          visited[v_num] = VerticeStatus::VISITED;
+          if (time_info != nullptr && time != nullptr) {
+            (*time_info)[v_num].second = (*time)++;
+          }
+          proc_stack.pop();
         }
         else {
-            std::cout << "PV: " << proc_vertice.first + 1;
-            if (time) {
-                std::cout << " post time: " << *time ;
+          // got a neighbour to process
+          if (visited[*v_neighbour_it] == VerticeStatus::UNVISITED) {
+            proc_stack.emplace(std::make_pair(*v_neighbour_it, graph[*v_neighbour_it].cbegin()));
+
+            if (time_info != nullptr && time != nullptr) {
+              (*time_info)[*v_neighbour_it].first = (*time)++;
             }
-            std::cout << std::endl;
-            // fill postvisited time
-            if (time_info && time) {
-                (*time_info)[proc_vertice.first].second = (*time)++;
-            }
-            proc_stack.pop();
+          }
+          
+          ++v_neighbour_it;
         }
     }
 }
