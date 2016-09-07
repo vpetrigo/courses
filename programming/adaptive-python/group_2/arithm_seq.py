@@ -17,7 +17,7 @@ def is_arithm_seq(seq):
             return True
 
     return True
-        
+
 
 def main():
     sequence = list(map(int, sys.stdin.readline().split()))
@@ -27,7 +27,7 @@ def main():
         print("Yes")
     else:
         print("No")
-    
+
 
 if __name__ == "__main__":
     main()
