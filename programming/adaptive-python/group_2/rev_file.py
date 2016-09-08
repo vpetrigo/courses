@@ -12,8 +12,6 @@ def main():
         for line in reversed(list(reader)):
             print(line, file=f, end="")
 
-    #print(list(reversed(reader)))
-
 
 if __name__ == "__main__":
     main()
