@@ -10,6 +10,7 @@
 #include <sys/socket.h>
 #include <sys/types.h>
 #endif
+#include <memory>
 
 namespace downloader {
 
@@ -27,10 +28,26 @@ class Socket {
   int sock_fd_{-1};
 };
 
+class SocketReader {
+ public:
+  virtual ~SocketReader() = default;
+
+  virtual char *ReadData() = 0;
+  virtual void ConnectToUrl(const std::string& url);
+};
+
+class SocketNonBlockReader {
+ public:
+  SocketNonBlockReader();
+  ~SocketNonBlockReader() override = default;
+ private:
+  std::unique_ptr<Socket> sock_;
+};
+
 // abstract factory for creating sockets
 class SocketFactory {
  public:
-  virtual Socket *CreateSocket() = 0;
+  virtual std::unique_ptr<Socket> CreateSocket(int sf, int st, int prot) = 0;
   virtual ~SocketFactory() = default;
 };
 

@@ -17,13 +17,13 @@ class WindowsSocket : public Socket {
 
   ~WindowsSocket() override;
 
-  void ConnectSocket(const struct sockaddr* addr, socklen_t addrlen) override;
+  void ConnectSocket(const struct sockaddr *addr, socklen_t addrlen) override;
 };
 
 class WindowsSocketFactory : public SocketFactory {
  public:
-  Socket* CreateSocket() override;
-  Socket* CreateSecureSocket();
+  std::unique_ptr<Socket> CreateSocket(int sf, int st, int prot) override;
+  std::unique_ptr<Socket> CreateSecureSocket(int sf, int st, int prot);
   ~WindowsSocketFactory() override = default;
 };
 

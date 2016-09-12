@@ -6,15 +6,16 @@
 #include "socket.hpp"
 
 namespace downloader {
+
 class Downloader {
  public:
-  explicit Downloader(const std::string& url, const std::string& path = ".");
+  Downloader(const std::string& url, const std::string& path = ".");
   ~Downloader();
 
   // prohibit copying
   Downloader(const Downloader&) = delete;
   Downloader& operator=(const Downloader&) = delete;
-  // enalbe moving
+  // enable moving
   Downloader(Downloader&&) = default;
   Downloader& operator=(Downloader&&) = default;
 
@@ -23,10 +24,11 @@ class Downloader {
   void Download();
 
  private:
-  std::unique_ptr<Socket> socket_;
+  std::unique_ptr<SocketReader> sr_;
   std::string url_;
   std::string output_path_;
 };
+
 }  // namespace downloader
 
 #endif  // MAILRU_COURSE_DOWNLOADER_HPP
