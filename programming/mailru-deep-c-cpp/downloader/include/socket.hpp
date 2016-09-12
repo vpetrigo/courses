@@ -40,6 +40,9 @@ class SocketNonBlockReader {
  public:
   SocketNonBlockReader();
   ~SocketNonBlockReader() override = default;
+
+  char *ReadData() override;
+  void ConnectToUrl(const std::string& url);
  private:
   std::unique_ptr<Socket> sock_;
 };
