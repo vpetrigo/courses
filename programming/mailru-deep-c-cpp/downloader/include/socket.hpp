@@ -33,7 +33,7 @@ class SocketReader {
   virtual ~SocketReader() = default;
 
   virtual char *ReadData() = 0;
-  virtual void ConnectToUrl(const std::string& url);
+  virtual void ConnectToUrl(const std::string &url);
 };
 
 class SocketNonBlockReader {
@@ -42,7 +42,8 @@ class SocketNonBlockReader {
   ~SocketNonBlockReader() override = default;
 
   char *ReadData() override;
-  void ConnectToUrl(const std::string& url);
+  void ConnectToUrl(const std::string &url);
+
  private:
   std::unique_ptr<Socket> sock_;
 };

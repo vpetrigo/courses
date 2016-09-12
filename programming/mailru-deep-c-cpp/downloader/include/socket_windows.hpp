@@ -17,7 +17,7 @@ class WindowsSocket : public Socket {
 
   ~WindowsSocket() override;
 
-  void ConnectSocket(const struct sockaddr *addr, socklen_t addrlen) override;
+  void ConnectSocket(const struct sockaddr* addr, socklen_t addrlen) override;
 };
 
 class WindowsSocketFactory : public SocketFactory {

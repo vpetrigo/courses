@@ -17,7 +17,7 @@ class LinuxSocket : public Socket {
 
   ~LinuxSocket() override;
 
-  void ConnectSocket(const struct sockaddr *addr, socklen_t addrlen) override;
+  void ConnectSocket(const struct sockaddr* addr, socklen_t addrlen) override;
 };
 
 class LinuxSocketFactory : public SocketFactory {
