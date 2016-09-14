@@ -90,11 +90,12 @@ int main() {
   std::memset(data, 0, data_size);
   std::ofstream ofs{"file", std::ios_base::binary};
   int rest_data_size = ios.readsome(data, data_size);
+
   ofs.write(data, rest_data_size);
   std::cout << rest_data_size << std::endl;
   content_len_bytes -= rest_data_size;
-
   data_size = std::min(data_size, content_len_bytes);
+
   while (content_len_bytes && ios.read(data, data_size)) {
     content_len_bytes -= ios.gcount();
     ofs.write(data, ios.gcount());
