@@ -2,8 +2,8 @@
 #define MAILRU_COURSE_SOCKBUF_HPP
 
 #include <array>
-#include <streambuf>
 #include <iostream>
+#include <streambuf>
 #include "socket.hpp"
 
 namespace downloader {
@@ -25,7 +25,7 @@ class SocketStreamBuf : public std::basic_streambuf<CharT> {
                input_buffer_.begin());
   }
 
-  ~SocketStreamBuf() { sync(); } 
+  ~SocketStreamBuf() { sync(); }
 
   SocketStreamBuf(const SocketStreamBuf& buf) = delete;
   SocketStreamBuf& operator=(const SocketStreamBuf& buf) = delete;
@@ -50,25 +50,27 @@ class SocketStreamBuf : public std::basic_streambuf<CharT> {
     // get response to
     sync();
     if (read_data()) {
-      return *Base::gptr();
+      // here we may have a value = 255 that would be interpret
+      // as EOF in term of default signed char
+      return static_cast<unsigned char>(*Base::gptr());
     }
-    
+
     return traits_type::eof();
   }
 
   int sync() override {
     constexpr int SUCCESS = 0;
-    
+
     if (send_data()) {
-        return SUCCESS;
+      return SUCCESS;
     }
-    
+
     return traits_type::eof();
   }
 
   bool send_data() {
     off_type size = Base::pptr() - Base::pbase();
-    
+
     if (size == 0 || send(socket_, Base::pbase(), size, 0) == size) {
       Base::pbump(-size);
       return true;
@@ -87,7 +89,7 @@ class SocketStreamBuf : public std::basic_streambuf<CharT> {
 
     if (retval > 0) {
       ssize_t read_bytes =
-                        recv(socket_, input_buffer_.begin(), input_buffer_.size(), 0);
+          recv(socket_, input_buffer_.begin(), input_buffer_.size(), 0);
 
       if (read_bytes > 0) {
         Base::setg(input_buffer_.begin(), input_buffer_.begin(),
@@ -95,12 +97,12 @@ class SocketStreamBuf : public std::basic_streambuf<CharT> {
         return true;
       }
     }
-    
+
     return false;
   }
 
  private:
-  static constexpr std::size_t buffer_size = 1024;
+  static constexpr std::size_t buffer_size = 1;
   // buffers here
   std::array<char_type, buffer_size> input_buffer_;
   std::array<char_type, buffer_size> output_buffer_;
