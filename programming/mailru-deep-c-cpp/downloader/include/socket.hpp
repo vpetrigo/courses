@@ -8,6 +8,7 @@
 #else
 #include <netdb.h>
 #include <sys/socket.h>
+#include <sys/time.h>
 #include <sys/types.h>
 #endif
 #include <memory>
@@ -36,13 +37,13 @@ class SocketReader {
   virtual void ConnectToUrl(const std::string &url);
 };
 
-class SocketNonBlockReader {
+class SocketNonBlockReader : public SocketReader {
  public:
   SocketNonBlockReader();
-  ~SocketNonBlockReader() override = default;
+  ~SocketNonBlockReader() = default;
 
   char *ReadData() override;
-  void ConnectToUrl(const std::string &url);
+  void ConnectToUrl(const std::string &url) override;
 
  private:
   std::unique_ptr<Socket> sock_;
