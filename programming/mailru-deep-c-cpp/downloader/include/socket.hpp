@@ -10,6 +10,7 @@
 #include <sys/socket.h>
 #include <sys/time.h>
 #include <sys/types.h>
+#include <unistd.h>
 #endif
 #include <memory>
 

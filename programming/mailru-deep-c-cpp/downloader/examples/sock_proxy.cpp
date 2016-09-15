@@ -23,7 +23,7 @@ int main() {
   hints.ai_family = AF_INET;
   hints.ai_socktype = SOCK_STREAM;
 
-  if (getaddrinfo("releases.ubuntu.com", "80", &hints, &result) != 0) {
+  if (getaddrinfo("192.168.22.251", "3128", &hints, &result) != 0) {
     return 1;
   }
 
@@ -54,7 +54,7 @@ int main() {
   std::iostream ios{&css};
 
   ios << "GET "
-         "/14.04.5/ubuntu-14.04.5-desktop-amd64.iso "
+         "http://releases.ubuntu.com/14.04.5/ubuntu-14.04.5-desktop-amd64.iso "
          "HTTP/1.1"
       << std::endl;
   ios << "Host: releases.ubuntu.com" << std::endl << std::endl;
