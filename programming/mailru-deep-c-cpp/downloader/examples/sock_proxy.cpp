@@ -9,7 +9,7 @@
 #include <iostream>
 #include "socket_buf.hpp"
 
-using CSocketStreamBuf = downloader::SocketStreamBuf<char>;
+using CSocketStreamBuf = downloader::SocketStreamBuf;
 
 std::string GetHeaders(std::iostream& ios);
 std::size_t GetContentLength(const std::string& headers);

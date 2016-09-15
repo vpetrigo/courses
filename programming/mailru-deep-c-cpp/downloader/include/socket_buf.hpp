@@ -8,11 +8,10 @@
 
 namespace downloader {
 
-template <typename CharT>
-class SocketStreamBuf : public std::basic_streambuf<CharT> {
+class SocketStreamBuf : public std::basic_streambuf<char> {
  public:
-  using char_type = CharT;
-  using Base = std::basic_streambuf<char_type>;
+  using Base = std::basic_streambuf<char>;
+  using char_type = typename Base::char_type;
   using traits_type = typename Base::traits_type;
   using int_type = typename traits_type::int_type;
   using off_type = typename traits_type::off_type;
