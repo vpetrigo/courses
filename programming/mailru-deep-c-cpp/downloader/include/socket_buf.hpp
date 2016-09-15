@@ -2,7 +2,6 @@
 #define MAILRU_COURSE_SOCKBUF_HPP
 
 #include <array>
-#include <cassert>
 #include <iterator>
 #include <streambuf>
 #include "socket.hpp"
@@ -30,6 +29,9 @@ class SocketStreamBuf : public std::basic_streambuf<CharT> {
 
   SocketStreamBuf(const SocketStreamBuf& buf) = delete;
   SocketStreamBuf& operator=(const SocketStreamBuf& buf) = delete;
+
+  SocketStreamBuf(SocketStreamBuf&& buf) = default;
+  SocketStreamBuf& operator=(SocketStreamBuf&& buf) = default;
 
   void set_socket(int s) { socket_ = s; }
 
@@ -74,7 +76,7 @@ class SocketStreamBuf : public std::basic_streambuf<CharT> {
     off_type to_sent = size;
 
     if (size != 0) {
-      for (auto buf_it = output_buffer_.cbegin(); buf_it != output_buffer_.cend(); ) {
+      for (auto buf_it = output_buffer_.cbegin(); buf_it != Base::pptr();) {
         auto bytes_sent = send(socket_, buf_it, size, 0);
 
         if (bytes_sent == -1) {

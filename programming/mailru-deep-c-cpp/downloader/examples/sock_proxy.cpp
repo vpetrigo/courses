@@ -3,6 +3,7 @@
 #include <sys/types.h>
 #include <unistd.h>
 #include <algorithm>
+#include <cctype>
 #include <cstring>
 #include <fstream>
 #include <iostream>
@@ -10,8 +11,11 @@
 
 using CSocketStreamBuf = downloader::SocketStreamBuf<char>;
 
+std::string GetHeaders(std::iostream& ios);
+std::size_t GetContentLength(const std::string& headers);
+
 int main() {
-  struct addrinfo *result = nullptr;
+  struct addrinfo* result = nullptr;
   struct addrinfo hints;
   int sock_fd;
 
@@ -50,65 +54,85 @@ int main() {
   std::iostream ios{&css};
 
   ios << "GET "
-         "http://releases.ubuntu.com/16.04/MD5SUMS "
+         "http://releases.ubuntu.com/14.04.5/ubuntu-14.04.5-desktop-amd64.iso "
          "HTTP/1.1"
       << std::endl;
   ios << "Host: releases.ubuntu.com" << std::endl << std::endl;
 
-  char buf[4096];
-  int content_len_bytes = 0;
-  std::string content_len = "Content-Length";
+  auto HTTP_headers = GetHeaders(ios);
+  std::cout << HTTP_headers << std::endl;
 
-  std::memset(buf, 0, sizeof buf);
+  auto content_len_bytes = GetContentLength(HTTP_headers);
+  auto to_read = content_len_bytes;
+  constexpr std::size_t data_size = 1024;
+  std::array<char, data_size> data;
 
-  while (ios.getline(buf, 4096, '\n')) {
-    auto buf_size = std::strlen(buf);
-    // remove trailing '\r'
-    buf[buf_size - 1] = '\0';
-    --buf_size;
-    if (buf_size == 0) {
-      break;
-    }
+  std::cout << data.size() << std::endl;
 
-    if (std::equal(content_len.cbegin(), content_len.cend(), buf,
-                   [](const char &a, const char &b) {
-                     return std::tolower(a) == std::tolower(b);
-                   })) {
-      auto it = std::find(buf, buf + buf_size, ' ');
-      content_len_bytes = std::stoi(std::string(it, buf + buf_size));
-    }
-
-    std::cout << buf << std::endl;
-    std::memset(buf, 0, sizeof buf);
-  }
-
-  std::cout << ios.gcount() << std::endl;
-  std::cout << ios.good() << std::endl;
-
-  auto data_size = 1024;
-  char *data = new char[data_size];
-  std::memset(data, 0, data_size);
   std::ofstream ofs{"file", std::ios_base::binary};
-  int rest_data_size = ios.readsome(data, data_size);
+  auto rest_data_size = ios.readsome(data.begin(), to_read);
 
-  ofs.write(data, rest_data_size);
-  std::cout << rest_data_size << std::endl;
-  content_len_bytes -= rest_data_size;
-  data_size = std::min(data_size, content_len_bytes);
+  ofs.write(data.begin(), rest_data_size);
+  to_read -= rest_data_size;
 
-  while (content_len_bytes && ios.read(data, data_size)) {
-    content_len_bytes -= ios.gcount();
-    ofs.write(data, ios.gcount());
-    data_size = std::min(data_size, content_len_bytes);
+  while (to_read && ios.read(data.begin(), data.size())) {
+    to_read -= ios.gcount();
+    ofs.write(data.begin(), ios.gcount());
   }
 
   if (ios.eof()) {
     std::cout << "end of file" << std::endl;
   }
 
-  delete[] data;
   freeaddrinfo(result);
-  close(sock_fd);
+  close(css.get_socket());
 
   return 0;
+}
+
+std::string GetHeaders(std::iostream& ios) {
+  constexpr auto init_storage_size = 65536U;
+  std::string headers;
+  bool http_header_delim_met = false;
+
+  headers.reserve(init_storage_size);
+
+  for (auto ch = '\0'; !http_header_delim_met && ios.get(ch);) {
+    headers += ch;
+
+    if (ch == '\r') {
+      unsigned short counter = 1;
+
+      while (counter < 4 && ios.get(ch) && (ch == '\r' || ch == '\n')) {
+        ++counter;
+        headers += ch;
+      }
+
+      if (counter == 4) {
+        // remove additional '\r\n'
+        headers.pop_back();
+        headers.pop_back();
+        http_header_delim_met = true;
+      } else {
+        ios.putback(ch);
+      }
+    }
+  }
+
+  headers.shrink_to_fit();
+
+  return headers;
+}
+
+std::size_t GetContentLength(const std::string& headers) {
+  std::size_t content_len = 0;
+  const std::string cl_ = "Content-Length:";
+
+  const auto pos = headers.find(cl_);
+
+  if (pos != std::string::npos) {
+    content_len = std::strtoul(&headers.front() + pos + cl_.size(), nullptr, 0);
+  }
+
+  return content_len;
 }
