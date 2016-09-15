@@ -2,7 +2,8 @@
 #define MAILRU_COURSE_SOCKBUF_HPP
 
 #include <array>
-#include <iostream>
+#include <cassert>
+#include <iterator>
 #include <streambuf>
 #include "socket.hpp"
 
@@ -48,8 +49,7 @@ class SocketStreamBuf : public std::basic_streambuf<CharT> {
     // if we have something to send - send it
     // otherwise we might not send something we want to
     // get response to
-    sync();
-    if (read_data()) {
+    if (sync() != traits_type::eof() && read_data()) {
       // here we may have a value = 255 that would be interpret
       // as EOF in term of default signed char
       return static_cast<unsigned char>(*Base::gptr());
@@ -69,14 +69,25 @@ class SocketStreamBuf : public std::basic_streambuf<CharT> {
   }
 
   bool send_data() {
+    // bytes to send
     off_type size = Base::pptr() - Base::pbase();
+    off_type to_sent = size;
 
-    if (size == 0 || send(socket_, Base::pbase(), size, 0) == size) {
+    if (size != 0) {
+      for (auto buf_it = output_buffer_.cbegin(); buf_it != output_buffer_.cend(); ) {
+        auto bytes_sent = send(socket_, buf_it, size, 0);
+
+        if (bytes_sent == -1) {
+          return false;
+        }
+        to_sent -= bytes_sent;
+        std::advance(buf_it, bytes_sent);
+      }
+
       Base::pbump(-size);
-      return true;
     }
 
-    return false;
+    return to_sent == 0 ? true : false;
   }
 
   bool read_data() {
@@ -102,7 +113,7 @@ class SocketStreamBuf : public std::basic_streambuf<CharT> {
   }
 
  private:
-  static constexpr std::size_t buffer_size = 1;
+  static constexpr std::size_t buffer_size = 1024;
   // buffers here
   std::array<char_type, buffer_size> input_buffer_;
   std::array<char_type, buffer_size> output_buffer_;
