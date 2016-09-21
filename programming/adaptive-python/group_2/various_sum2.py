@@ -17,11 +17,7 @@ def subset_sum(seq, req_sum) -> int:
 
 def various_sum_count(seq) -> int:
     max_sum = sum(seq)
-    # for i in range(1, max_sum + 1):
-    #     s = subset_sum(seq, i + 1)
-    #     if s:
-    #         var_sum.append(s)
-    s = subset_sum2(seq, max_sum + 1)
+    s = subset_sum(seq, max_sum + 1)
 
     return s.count(True)
 
