@@ -5,8 +5,7 @@
 
 using WeightType = unsigned;
 using VerticeType = std::pair<unsigned, WeightType>;
-using DistanceType = unsigned long;
-using DistanceCont = std::vector<DistanceType>;
+using DistanceType = int;
 using DistanceCont = std::vector<DistanceType>;
 using PrevCont = std::vector<VerticeType::first_type>;
 using GraphRepr = std::vector<std::vector<VerticeType>>;
@@ -50,10 +49,10 @@ GraphRepr create_graph(int v, int e) {
   GraphRepr g(v);
 
   while (e--) {
-    unsigned v, u, w;
+    unsigned u, v, w;
 
-    std::cin >> v >> u >> w;
-    g[v - 1].emplace_back(std::make_pair(u - 1, w));
+    std::cin >> u >> v >> w;
+    g[u - 1].emplace_back(std::make_pair(v - 1, w));
   }
 
   return g;
@@ -80,7 +79,6 @@ void InitDijkstraConts(PrevCont &prev, DistanceCont &dist) {
 
 WeightType Dijkstra(const GraphRepr &graph, const unsigned start_node,
                     const unsigned end_node) {
-  constexpr auto INF = std::numeric_limits<DistanceType>::max();
   PrevCont prev(graph.size());
   DistanceCont dist(graph.size());
   InitDijkstraConts(prev, dist);
@@ -92,21 +90,14 @@ WeightType Dijkstra(const GraphRepr &graph, const unsigned start_node,
     auto u_vertice = queue.top();
     queue.pop();
 
-    // if we got a vertice with the infinity distance
-    // we probably didn't do anything with it on the previous step.
-    if (dist[u_vertice.second] == INF) {
-      break;
-    }
-
-    for (const auto &edge : graph[u_vertice.second]) {
-      const auto u_vertice_num = u_vertice.second;
-      const auto v_vertice_num = edge.first;
-      const auto v_vertice_weight = edge.second;
-      // if there is at least one vertice with known distance
-      // try to relax an edge between them
-      if (RelaxEdge(u_vertice_num, v_vertice_num,
-                    v_vertice_weight, dist, prev)) {
-        queue.push(std::make_pair(dist[v_vertice_num], v_vertice_num));
+    // if we meet a node with an outdated distance do not process it
+    if (u_vertice.first <= dist[u_vertice.second]) {
+      for (const auto &edge : graph[u_vertice.second]) {
+        // if there is at least one vertice with known distance
+        // try to relax an edge between them
+        if (RelaxEdge(u_vertice.second, edge.first, edge.second, dist, prev)) {
+          queue.push(std::make_pair(dist[edge.first], edge.first));
+        }
       }
     }
   }
