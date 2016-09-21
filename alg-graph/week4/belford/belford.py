@@ -22,7 +22,8 @@ def CreateGraph(num_v, num_e, reader):
 
 
 def BellmanFordNegCycle(graph, num_v):
-    dist = [0 for _ in range(num_v)]
+    dist = [math.inf for _ in range(num_v)]
+    dist[0] = 0
 
     for it in range(num_v + 1):
         for edge in graph:
