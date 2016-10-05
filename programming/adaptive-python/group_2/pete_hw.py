@@ -30,5 +30,6 @@ def main():
 
     print(mistakes)
 
+
 if __name__ == "__main__":
     main()

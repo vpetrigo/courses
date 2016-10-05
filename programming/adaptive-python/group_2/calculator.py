@@ -3,16 +3,15 @@
 
 import operator as op
 
-
 MATH_OP = {
-            "+": op.add,
-            "-": op.sub,
-            "/": op.truediv,
-            "*": op.mul,
-            "mod": op.mod,
-            "div": op.floordiv,
-            "pow": op.pow
-          }
+    "+": op.add,
+    "-": op.sub,
+    "/": op.truediv,
+    "*": op.mul,
+    "mod": op.mod,
+    "div": op.floordiv,
+    "pow": op.pow
+}
 
 
 def main():

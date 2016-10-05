@@ -7,5 +7,6 @@ def main():
 
     print(nuts % squrrels)
 
+
 if __name__ == "__main__":
     main()

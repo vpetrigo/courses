@@ -9,5 +9,6 @@ def main():
 
     print(chr(ord(START_SYMBOL) + n))
 
+
 if __name__ == "__main__":
     main()

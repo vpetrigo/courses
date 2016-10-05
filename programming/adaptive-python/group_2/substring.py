@@ -13,7 +13,7 @@ def zfunc_opt(string):
     for i in range(1, str_len):
         z[i] = max(0, min(right - i, z[i - left]))
         while (i + z[i] < str_len and
-               string[z[i]] == string[i + z[i]]):
+                       string[z[i]] == string[i + z[i]]):
             z[i] += 1
 
         if i + z[i] >= right:

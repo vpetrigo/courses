@@ -17,5 +17,6 @@ def main():
     n = int(input())
     print(sum(get_digit(n)))
 
+
 if __name__ == "__main__":
     main()

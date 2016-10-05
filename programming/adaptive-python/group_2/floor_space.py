@@ -28,10 +28,10 @@ def triangle():
 
 
 FLAT_TYPES = {
-                "triangle": triangle,
-                "circle": circle,
-                "rectangle": rectangle
-             }
+    "triangle": triangle,
+    "circle": circle,
+    "rectangle": rectangle
+}
 
 
 def main():

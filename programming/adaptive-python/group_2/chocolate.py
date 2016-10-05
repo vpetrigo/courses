@@ -18,7 +18,7 @@ def is_breakable(n, m, segment_size):
 
     if (choc_size >= segment_size and
             (rest_bar % n == 0 or rest_bar % m == 0)):
-            return True
+        return True
     return False
 
 

@@ -17,6 +17,7 @@ def square_int(n):
 
     return ()
 
+
 def square_int_2(n):
     # x ^ 2 + y ^ 2 = N => x, y < sqrt(N)
     border = math.floor(math.sqrt(n))
