@@ -21,7 +21,7 @@ class LinuxTCPClientSocket : public ClientSocket {
 
   bool Send(const char *output_buf, std::size_t size) override;
 
-  bool Connect(const std::string &host, const std::string &port);
+  bool Connect(const std::string &host, const std::string &port) override;
 };
 
 class LinuxSocketFactory : public SocketFactory {

@@ -19,8 +19,10 @@ namespace downloader {
 #if defined(WIN32) || defined(_WIN32) || \
     defined(__WIN32) && !defined(__CYGWIN__)
 using Socket_t = SOCKET;
+constexpr auto INIT_SOCK_VALUE = INVALID_SOCKET;
 #else
 using Socket_t = int;
+constexpr auto INIT_SOCK_VALUE = -1;
 #endif
 
 enum class Protocols { tcp, udp };
@@ -31,13 +33,14 @@ class ClientSocket {
   virtual ~ClientSocket() = default;
   virtual int Read(char *input_buf, std::size_t size) = 0;
   virtual bool Send(const char *output_buf, std::size_t size) = 0;
+  virtual bool Connect(const std::string &host, const std::string &port) = 0;
   Socket_t GetSocketFd() const;
 
  protected:
   void SetSocketFd(Socket_t s);
 
  private:
-  Socket_t sock_fd_{static_cast<Socket_t>(-1)};
+  Socket_t sock_fd_{INIT_SOCK_VALUE};
 };
 
 // abstract factory for creating sockets
