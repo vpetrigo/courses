@@ -5,25 +5,29 @@
 
 namespace downloader {
 
-class LinuxSocket : public Socket {
+class LinuxTCPClientSocket : public ClientSocket {
  public:
-  LinuxSocket(int sock_family, int sock_type, int protocol);
+  LinuxTCPClientSocket();
   // deprecate copying of a socket
-  LinuxSocket(const LinuxSocket&) = delete;
-  LinuxSocket& operator=(const LinuxSocket&) = delete;
+  LinuxTCPClientSocket(const LinuxTCPClientSocket&) = delete;
+  LinuxTCPClientSocket &operator=(const LinuxTCPClientSocket&) = delete;
   // it might be possible to move socket
-  LinuxSocket(LinuxSocket&&) = default;
-  LinuxSocket& operator=(LinuxSocket&&) = default;
+  LinuxTCPClientSocket(LinuxTCPClientSocket&&) = default;
+  LinuxTCPClientSocket &operator=(LinuxTCPClientSocket&&) = default;
 
-  ~LinuxSocket() override;
+  ~LinuxTCPClientSocket() override;
 
-  void ConnectSocket(const struct sockaddr* addr, socklen_t addrlen) override;
+  int Read(char *input_buf, std::size_t size) override;
+
+  bool Send(const char *output_buf, std::size_t size) override;
+
+  bool Connect(const std::string &host, const std::string &port);
 };
 
 class LinuxSocketFactory : public SocketFactory {
  public:
-  std::unique_ptr<Socket> CreateSocket(int sf, int st, int prot) override;
-  std::unique_ptr<Socket> CreateSecureSocket(int sf, int st, int prot);
+  std::unique_ptr<ClientSocket> CreateSocket(int sf, int st, int prot) override;
+  std::unique_ptr<ClientSocket> CreateSecureSocket(int sf, int st, int prot);
   ~LinuxSocketFactory() override = default;
 };
 

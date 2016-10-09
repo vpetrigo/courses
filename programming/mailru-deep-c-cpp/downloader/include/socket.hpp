@@ -16,44 +16,35 @@
 
 namespace downloader {
 
-// base class for further system-depended implementations
-class Socket {
- public:
-  virtual ~Socket() = default;
+#if defined(WIN32) || defined(_WIN32) || \
+    defined(__WIN32) && !defined(__CYGWIN__)
+using Socket_t = SOCKET;
+#else
+using Socket_t = int;
+#endif
 
-  virtual void ConnectSocket(const struct sockaddr *addr,
-                             socklen_t addrlen) = 0;
+enum class Protocols { tcp, udp };
+
+// base class for further system-depended implementations
+class ClientSocket {
+ public:
+  virtual ~ClientSocket() = default;
+  virtual int Read(char *input_buf, std::size_t size) = 0;
+  virtual bool Send(const char *output_buf, std::size_t size) = 0;
+  Socket_t GetSocketFd() const;
 
  protected:
-  Socket(int sock_family, int sock_type, int protocol);
-
-  int sock_fd_{-1};
-};
-
-class SocketReader {
- public:
-  virtual ~SocketReader() = default;
-
-  virtual char *ReadData() = 0;
-  virtual void ConnectToUrl(const std::string &url);
-};
-
-class SocketNonBlockReader : public SocketReader {
- public:
-  SocketNonBlockReader();
-  ~SocketNonBlockReader() = default;
-
-  char *ReadData() override;
-  void ConnectToUrl(const std::string &url) override;
+  void SetSocketFd(Socket_t s);
 
  private:
-  std::unique_ptr<Socket> sock_;
+  Socket_t sock_fd_{static_cast<Socket_t>(-1)};
 };
 
 // abstract factory for creating sockets
 class SocketFactory {
  public:
-  virtual std::unique_ptr<Socket> CreateSocket(int sf, int st, int prot) = 0;
+  virtual std::unique_ptr<ClientSocket> CreateSocket(int sf, int st,
+                                                     int prot) = 0;
   virtual ~SocketFactory() = default;
 };
 
