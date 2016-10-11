@@ -12,6 +12,7 @@
 #include <sys/types.h>
 #include <unistd.h>
 #endif
+#include <exception>
 #include <memory>
 
 namespace downloader {
@@ -27,27 +28,38 @@ constexpr auto INIT_SOCK_VALUE = -1;
 
 enum class Protocols { tcp, udp };
 
-// base class for further system-depended implementations
-class ClientSocket {
+enum class Ip { v4, v6 };
+
+class SocketException : public std::exception {};
+
+class Socket {
  public:
-  virtual ~ClientSocket() = default;
-  virtual int Read(char *input_buf, std::size_t size) = 0;
-  virtual bool Send(const char *output_buf, std::size_t size) = 0;
-  virtual bool Connect(const std::string &host, const std::string &port) = 0;
-  Socket_t GetSocketFd() const;
+  virtual ~Socket();
+
+  Socket(const Socket &) = delete;
+  Socket &operator=(const Socket &) = delete;
+
+  Socket_t GetFd() const;
 
  protected:
-  void SetSocketFd(Socket_t s);
+  Socket();
 
- private:
-  Socket_t sock_fd_{INIT_SOCK_VALUE};
+  Socket(Socket_t sfd, bool is_block = true);
+
+  Socket(Socket &&);
+  Socket &operator=(Socket &&);
+
+  void swap(Socket &) noexcept;
+
+  // Data fields
+  Socket_t sock_fd_;
+  bool is_block;
 };
 
 // abstract factory for creating sockets
 class SocketFactory {
  public:
-  virtual std::unique_ptr<ClientSocket> CreateSocket(int sf, int st,
-                                                     int prot) = 0;
+  virtual std::unique_ptr<Socket> CreateSocket(int sf, int st, int prot) = 0;
   virtual ~SocketFactory() = default;
 };
 
