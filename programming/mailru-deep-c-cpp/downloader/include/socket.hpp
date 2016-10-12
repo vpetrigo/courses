@@ -20,15 +20,15 @@ namespace downloader {
 #if defined(WIN32) || defined(_WIN32) || \
     defined(__WIN32) && !defined(__CYGWIN__)
 using Socket_t = SOCKET;
-constexpr auto INIT_SOCK_VALUE = INVALID_SOCKET;
+constexpr auto INVALID_VALUE = INVALID_SOCKET;
 #else
 using Socket_t = int;
-constexpr auto INIT_SOCK_VALUE = -1;
+constexpr auto INVALID_VALUE = -1;
 #endif
 
 enum class Protocols { tcp, udp };
 
-enum class Ip { v4, v6 };
+enum class IpSupport { v4, v6, both };
 
 class SocketException : public std::exception {};
 

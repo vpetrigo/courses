@@ -1,7 +1,7 @@
 #include "socket.hpp"
 
 namespace downloader {
-Socket::Socket() : sock_fd_{INIT_SOCK_VALUE}, is_block{true} {}
+Socket::Socket() : sock_fd_{INVALID_VALUE}, is_block{true} {}
 
 Socket::Socket(Socket_t sfd, bool is_block)
     : sock_fd_{sfd}, is_block{is_block} {
