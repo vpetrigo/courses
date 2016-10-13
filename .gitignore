@@ -9,3 +9,7 @@ build/
 
 # VS Code
 .vscode/
+
+# C/C++ output
+*.exe
+*.out
