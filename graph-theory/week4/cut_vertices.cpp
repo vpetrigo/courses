@@ -89,6 +89,8 @@ void dfs_cut(Vertice &source, const Vertice &parent,
   unsigned children = 0;
 
   for (const auto &n : graph.at(source.get_num())) {
+    // don't try to check parent node as it uses the same
+    // edge
     if (n != parent.get_num()) {
       if (!v_list[n].is_visited()) {
         // descendant node
@@ -98,7 +100,9 @@ void dfs_cut(Vertice &source, const Vertice &parent,
 
         if (v_list[n].get_l_value() >= source.get_in_time() &&
             parent.get_num() != max_val) {
-          c_v.insert(source.get_num());
+          // a descendant node has l(n) >= k(source), so deleting of the source
+          // vertice cause to increase of connected components number
+          c_v.emplace(source.get_num());
         }
         ++children;
       }
@@ -111,6 +115,6 @@ void dfs_cut(Vertice &source, const Vertice &parent,
   }
 
   if (parent.get_num() == max_val && children > 1) {
-    c_v.insert(source.get_num());
+    c_v.emplace(source.get_num());
   }
 }
