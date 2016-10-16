@@ -2,9 +2,7 @@ cmake_minimum_required(VERSION 3.2)
 project(downloader)
 
 set(DOWNLOADER_LIBS downloader CACHE INTERNAL "")
-set(DOWNLOADER_INC "${PROJECT_SOURCE_DIR}/include/")
-
-include_directories(${DOWNLOADER_INC})
+set(DOWNLOADER_INC "${downloader_SOURCE_DIR}/include" CACHE INTERNAL "")
 
 enable_testing()
 

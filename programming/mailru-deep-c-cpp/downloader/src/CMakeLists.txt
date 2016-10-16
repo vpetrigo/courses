@@ -1,3 +1,4 @@
-add_library(LinuxSocket socket.cpp socket_linux.cpp
-        ${DOWNLOADER_INC}/socket.hpp
-        ${DOWNLOADER_INC}/socket_linux.hpp)
+include_directories(${DOWNLOADER_INC})
+
+add_library(inet_lib inet_socket.cpp socket.cpp
+        ${DOWNLOADER_INC}/inet_socket.hpp ${DOWNLOADER_INC}/socket.hpp)
