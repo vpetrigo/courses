@@ -83,8 +83,7 @@ class SockStreambuf : public std::streambuf {
     return traits_type::eof();
   }
 
-  int_type underflow()
-  {
+  int_type underflow() override {
     if (gptr() < pptr()) {
       setg(&buffer_.front(), gptr(), pptr());
       return traits_type::to_int_type(*gptr());
@@ -129,6 +128,16 @@ class SockStreambuf : public std::streambuf {
   std::size_t max_size_;
   std::vector<char_type, Allocator> buffer_;
 };
+
+// declarations for linker to be calm
+template <typename Alloc>
+constexpr std::size_t SockStreambuf<Alloc>::min_buffer_size;
+
+template <typename Alloc>
+constexpr std::size_t SockStreambuf<Alloc>::default_buffer_size;
+
+using Char_SockStreambuf = SockStreambuf<std::allocator<char>>;
+
 }  // namespace downloader
 
 #endif  // MAILRU_SOCKET_STREAMBUF_HPP
