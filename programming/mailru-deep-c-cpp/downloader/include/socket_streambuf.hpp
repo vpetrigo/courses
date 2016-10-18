@@ -28,7 +28,7 @@ class SockStreambuf : public std::streambuf {
   SockStreambuf(const SockStreambuf&) = delete;
   SockStreambuf& operator=(const SockStreambuf&) = delete;
 
-  std::size_t size() const { return gptr() - pptr(); }
+  std::size_t size() const { return pptr() - gptr(); }
 
   std::size_t max_size() const { return max_size_; }
 
@@ -67,11 +67,7 @@ class SockStreambuf : public std::streambuf {
     if (!traits_type::eq_int_type(ch, traits_type::eof())) {
       if (pptr() == epptr()) {
         std::size_t buffer_size = pptr() - gptr();
-
-        if (buffer_size < max_size_) {
-          buffer_.reserve(
-              std::min(default_buffer_size, max_size_ - buffer_size));
-        }
+        reserve(std::min(default_buffer_size, max_size_ - buffer_size));
       }
 
       *pptr() = traits_type::to_char_type(ch);
@@ -93,12 +89,15 @@ class SockStreambuf : public std::streambuf {
   }
 
   void reserve(std::size_t n) {
-    std::size_t gnext = gptr() - &buffer_.front();
-    std::size_t pnext = pptr() - &buffer_.front();
-    std::size_t pend = epptr() - &buffer_.front();
+    std::size_t gnext =
+        static_cast<std::size_t>(std::distance(&buffer_.front(), gptr()));
+    std::size_t pnext =
+        static_cast<std::size_t>(std::distance(&buffer_.front(), pptr()));
+    std::size_t pend =
+        static_cast<std::size_t>(std::distance(&buffer_.front(), epptr()));
 
     if (n <= pend - pnext) {
-      // already has enought space
+      // already has enough space
       return;
     }
 
@@ -112,8 +111,7 @@ class SockStreambuf : public std::streambuf {
       if (n <= max_size_ && pnext <= max_size_ - n) {
         pend = pnext + n;
         buffer_.resize(std::max(pend, min_buffer_size));
-      }
-      else {
+      } else {
         throw std::runtime_error{"Cannot increase the streambuf size"};
       }
     }
@@ -121,7 +119,7 @@ class SockStreambuf : public std::streambuf {
     setg(&buffer_.front(), &buffer_.front(),
          std::next(&buffer_.front(), pnext));
     setp(std::next(&buffer_.front(), pnext),
-         std::next(&buffer_.front(), pnext));
+         std::next(&buffer_.front(), pend));
   }
 
  private:

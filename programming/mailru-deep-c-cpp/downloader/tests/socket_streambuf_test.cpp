@@ -30,7 +30,7 @@ TEST(SockStreamBuf_test, unsigned_char_input) {
 
 TEST(SockStreamBuf_test, commit_seq) {
   constexpr std::size_t size = 32;
-  downloader::Char_SockStreambuf sb(32);
+  downloader::Char_SockStreambuf sb(size);
   std::string s{"Hello"};
   auto write_area = sb.prepare(s.size());
   auto s_it = s.cbegin();
