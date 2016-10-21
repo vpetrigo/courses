@@ -11,32 +11,36 @@ def build_graph(n, m, reader):
     for i in range(m):
         u, v, w = next(reader)
         graph[u][v] = w
-        residual_graph[u][v] = 0
-        residual_graph[v][u] = w
+        residual_graph[u][v] = w
+        residual_graph[v][u] = 0
 
     return graph, residual_graph
 
 
-def augmented(origin_graph, residual_graph, path):
-    def update_flow(s, t, flow):
+def augmented(origin_graph, residual_graph, flow, path):
+    def update_flow(s, t, f, mf):
         if origin_graph[s][t] is not None:
             # path contains forward edge
-            residual_graph[s][t] += flow
-            residual_graph[t][s] -= flow
+            f[s][t] += mf
         else:
             # path contains backward edge
-            residual_graph[t][s] += flow
-            residual_graph[s][t] -= flow
+            f[s][t] -= mf
 
     # mask edge capacity in that task is 50
     min_flow = 51
     # find the bottleneck flow
     for i in range(len(path) - 1):
-        edge_flow = residual_graph[path[i + 1]][path[i]]
+        u, v = path[i], path[i + 1]
+
+        if origin_graph[u][v] is not None:
+            edge_flow = origin_graph[u][v] - flow[u][v]
+        else:
+            edge_flow = flow[v][u]
+
         min_flow = min(min_flow, edge_flow)
 
     for i in range(len(path) - 1):
-        update_flow(path[i], path[i + 1], min_flow)
+        update_flow(path[i], path[i + 1], flow, min_flow)
 
     return min_flow
 
@@ -52,8 +56,8 @@ def max_flow(source: 'vertice', sink: 'vertice', graph):
         # print(s, " neighbours - ", neighbours)
         for n in neighbours:
             capacity = origin_graph[s][n]
-            cur_flow = residual_graph[s][n]
-            back_flow = residual_graph[n][s]
+            cur_flow = flow[s][n]
+            back_flow = flow[n][s]
             # print("capacity", s, "->", n, ":", capacity)
             # print("cur flow:", cur_flow, "back flow:", back_flow)
             if not visited[n]:
@@ -68,17 +72,18 @@ def max_flow(source: 'vertice', sink: 'vertice', graph):
 
     origin_graph = graph[0]
     residual_graph = graph[1]
+    flow = [[0 for _ in range(len(origin_graph))] for _ in range(len(origin_graph))]
     const_visited = [False for _ in range(len(origin_graph))]
     visited = const_visited[:]
     path = dfs(source, sink)
-    flow = 0
+    m_flow = 0
 
     while path:
-        flow += augmented(origin_graph, residual_graph, path)
+        m_flow += augmented(origin_graph, residual_graph, flow, path)
         visited = const_visited[:]
         path = dfs(source, sink)
 
-    return flow
+    return m_flow
 
 
 def main():
