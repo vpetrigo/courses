@@ -4,6 +4,9 @@ build/
 # IDEA folders
 .idea/
 
+# CMake build folder
+cmake-build-debug/
+
 # Clang precompiled headers
 .stdafx.c*
 
