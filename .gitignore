@@ -1,5 +1,6 @@
 # temporary build folder
 build/
+__pycache__/
 
 # IDEA folders
 .idea/
