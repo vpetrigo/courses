@@ -8,21 +8,16 @@ def items_cost(items, bp_capacity):
     items_by_cost = sorted(items, key=lambda e: e[0] / e[1], reverse=True)
     cur_weight = 0
     cur_cost = 0
-    i = 0
 
-    while i < len(items_by_cost):
-        item = items_by_cost[i]
-
+    for item in items_by_cost:
         if cur_weight + item[1] > bp_capacity:
+            cur_cost += (bp_capacity - cur_weight) * \
+                        item[0] / item[1]
+
             break
-
-        cur_weight += item[1]
-        cur_cost += item[0]
-        i += 1
-
-    if i != len(items_by_cost) and cur_weight < bp_capacity:
-        cur_cost += (bp_capacity - cur_weight) * \
-                    items_by_cost[i][0] / items_by_cost[i][1]
+        else:
+            cur_weight += item[1]
+            cur_cost += item[0]
 
     return cur_cost
 
