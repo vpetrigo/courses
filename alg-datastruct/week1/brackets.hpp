@@ -27,12 +27,12 @@ class Stack {
     stack_.emplace_back(el);
   }
 
-  T&& Pop() {
+  T Pop() {
     T back{stack_.back()};
 
     stack_.pop_back();
 
-    return std::move(back);
+    return back;
   }
 
   bool Empty() {
