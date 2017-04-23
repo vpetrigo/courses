@@ -1,11 +1,12 @@
 #include "brackets.hpp"
 
-#include <array>
 #include <gtest/gtest.h>
+#include <array>
 
 using char_stack = Stack<char>;
 
-TEST(Stack_test, Push_one_element) {
+TEST(Stack_test, Push_one_element)
+{
   char_stack ns;
   constexpr char val = '[';
 
@@ -15,7 +16,8 @@ TEST(Stack_test, Push_one_element) {
   ASSERT_EQ(ns.Pop(), val);
 }
 
-TEST(Stack_test, Push_multiple_elements) {
+TEST(Stack_test, Push_multiple_elements)
+{
   std::array<char, 2> val{'[', ']'};
   char_stack ch_stack;
 
@@ -32,7 +34,8 @@ TEST(Stack_test, Push_multiple_elements) {
   ASSERT_TRUE(ch_stack.Empty());
 }
 
-TEST(Stack_test, Push_pop_sequence) {
+TEST(Stack_test, Push_pop_sequence)
+{
   std::array<char, 4> val{'a', 'b', 'c', 'd'};
   char_stack ch_stack;
   auto it = val.cbegin();

@@ -7,20 +7,23 @@
 using CharStack = Stack<char>;
 using SizeStack = Stack<std::size_t>;
 
-static bool brackets_match(const char open_br, const char close_br) {
+static bool brackets_match(const char open_br, const char close_br)
+{
   static std::unordered_map<char, char> brackets_combinations{
       {']', '['}, {')', '('}, {'}', '{'}};
 
   return brackets_combinations[close_br] == open_br;
 }
 
-static bool intermediate_symbol(const char ch) {
+static bool intermediate_symbol(const char ch)
+{
   static std::set<char> punct{';', ',', '.', ':', '!', '?'};
 
   return (isalnum(ch) != 0) || (punct.find(ch) != punct.cend());
 }
 
-int main() {
+int main()
+{
   CharStack ch_stack;
   SizeStack size_stack;
   char ch{'\0'};
