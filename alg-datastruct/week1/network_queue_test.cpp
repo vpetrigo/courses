@@ -75,3 +75,17 @@ TEST(Numeric_NetworkQueue, zero_size_queue) {
   ASSERT_EQ(n_queue.Size(), 0);
   ASSERT_TRUE(n_queue.Empty());
 }
+
+TEST(Numeric_NetworkQueue, back_test) {
+  NumNetworkQueue n_queue{2};
+
+  n_queue.Push(1);
+  n_queue.Push(2);
+
+  ASSERT_EQ(n_queue.Back(), 2);
+  n_queue.Pop();
+  ASSERT_EQ(n_queue.Back(), 2);
+  n_queue.Push(3);
+  ASSERT_EQ(n_queue.Back(), 3);
+  ASSERT_TRUE(n_queue.Full());
+}
