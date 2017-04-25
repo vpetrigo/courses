@@ -60,7 +60,7 @@ TEST(Numeric_NetworkQueue, multiple_element_queue_overflow) {
   ASSERT_TRUE(n_queue.Full());
   ASSERT_EQ(n_queue.Size(), QUEUE_SIZE);
 
-  for (std::size_t i = QUEUE_SIZE/2; i < (QUEUE_SIZE + QUEUE_SIZE / 2); ++i) {
+  for (std::size_t i = QUEUE_SIZE / 2; i < (QUEUE_SIZE + QUEUE_SIZE / 2); ++i) {
     ASSERT_EQ(n_queue.Pop(), i);
   }
 
