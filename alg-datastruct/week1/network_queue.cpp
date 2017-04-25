@@ -24,7 +24,8 @@ int main()
     }
 
     if (!n_queue.Full()) {
-      std::size_t process_start = (n_queue.Empty()) ? packet.first : n_queue.Back();
+      std::size_t process_start =
+          (n_queue.Empty()) ? packet.first : n_queue.Back();
       std::size_t process_end = process_start + packet.second;
 
       n_queue.Push(process_end);
