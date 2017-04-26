@@ -36,7 +36,7 @@ int main()
 
     if (!output.Empty()) {
       // maximum either in output or input stack ;)
-      auto& max_in_frame =
+      const auto& max_in_frame =
           (input.Empty()) ? output.Max() : std::max(input.Max(), output.Max());
 
       std::cout << max_in_frame << ' ';
