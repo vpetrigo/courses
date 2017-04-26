@@ -7,7 +7,6 @@ template <typename T>
 class MaxStack {
  public:
   MaxStack() : elem_stack_{}, max_stack_{} {}
-
   void Push(const T& el)
   {
     elem_stack_.push(el);
@@ -34,22 +33,18 @@ class MaxStack {
     }
   }
 
-  void Pop() {
+  void Pop()
+  {
     elem_stack_.pop();
     max_stack_.pop();
   }
 
   const T& Max() const { return max_stack_.top(); }
-
   T& Max() { return max_stack_.top(); }
-
-  bool Empty() const {
-    return elem_stack_.empty();
-  }
-
-  std::size_t Size() const {
-    return elem_stack_.size();
-  }
+  const T& Top() const { return elem_stack_.top(); }
+  T& Top() { return elem_stack_.top(); }
+  bool Empty() const { return elem_stack_.empty(); }
+  std::size_t Size() const { return elem_stack_.size(); }
  private:
   std::stack<T> elem_stack_;
   std::stack<T> max_stack_;

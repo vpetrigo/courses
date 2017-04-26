@@ -36,3 +36,13 @@ TEST(Numeric_MaxStack, size_method) {
 
   ASSERT_EQ(stack.Size(), SIZE);
 }
+
+TEST(Numeric_MaxStack, top_method) {
+  NumMaxStack stack;
+  constexpr std::size_t SIZE = 128;
+
+  for (std::size_t i = 0; i < SIZE; ++i) {
+    stack.Push(i);
+    ASSERT_EQ(stack.Top(), i);
+  }
+}
