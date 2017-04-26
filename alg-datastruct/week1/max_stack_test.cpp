@@ -23,3 +23,16 @@ TEST(Numeric_MaxStack, multiple_element_stack) {
   stack.Pop();
   ASSERT_TRUE(stack.Empty());
 }
+
+TEST(Numeric_MaxStack, size_method) {
+  NumMaxStack stack;
+  constexpr std::size_t SIZE = 128;
+
+  ASSERT_EQ(stack.Size(), 0);
+
+  for (std::size_t i = 0; i < SIZE; ++i) {
+    stack.Push(i);
+  }
+
+  ASSERT_EQ(stack.Size(), SIZE);
+}

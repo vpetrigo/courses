@@ -46,6 +46,10 @@ class MaxStack {
   bool Empty() const {
     return elem_stack_.empty();
   }
+
+  std::size_t Size() const {
+    return elem_stack_.size();
+  }
  private:
   std::stack<T> elem_stack_;
   std::stack<T> max_stack_;
