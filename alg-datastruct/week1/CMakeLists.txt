@@ -15,3 +15,5 @@ add_executable(network_queue_example network_queue.cpp network_queue.h)
 set(max_stack_test_src max_stack.hpp max_stack_test.cpp)
 cxx_gtest(max_stack_test "${max_stack_test_src}")
 add_executable(max_stack_example max_stack.cpp max_stack.hpp)
+
+add_executable(frame_max_value_example frame_max_value.cpp)
