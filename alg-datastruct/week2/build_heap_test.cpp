@@ -24,3 +24,11 @@ TEST(Build_Heap, big_array_sort) {
   BuildHeap(arr.begin(), arr.end());
   ASSERT_TRUE(std::is_heap(arr.cbegin(), arr.cend(), std::greater<std::size_t>{}));
 }
+
+TEST(Build_Heap, reverse_array) {
+  std::array<std::size_t, 5> arr{5, 4, 3, 2, 1};
+
+  ASSERT_FALSE(std::is_heap(arr.cbegin(), arr.cend(), std::greater<size_t> {}));
+  BuildHeap(arr.begin(), arr.end());
+  ASSERT_TRUE(std::is_heap(arr.cbegin(), arr.cend(), std::greater<size_t> {}));
+}

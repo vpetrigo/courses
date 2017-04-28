@@ -2,26 +2,26 @@
 #define _BUILD_HEAP_HPP_
 
 #include <iterator>
+#include <iostream>
 
-template <typename It>
-void SiftDown(It first, It last, const std::size_t length, std::size_t index)
+template <typename It, typename Cmp>
+void SiftDown(It first, It last, const std::size_t length, const Cmp& compare,
+              std::size_t index)
 {
-  auto left_child = 2 * index + 1;
-  auto right_child = 2 * index + 2;
   auto smallest_elem = index;
   bool finish = false;
 
   while (!finish) {
-    left_child = 2 * index + 1;
-    right_child = 2 * index + 2;
+    auto left_child = 2 * index + 1;
+    auto right_child = 2 * index + 2;
 
     if (left_child < length &&
-        *(first + left_child) < *(first + smallest_elem)) {
+        compare(*(first + left_child), *(first + smallest_elem))) {
       smallest_elem = left_child;
     }
 
     if (right_child < length &&
-        *(first + right_child) < *(first + smallest_elem)) {
+        compare(*(first + right_child), *(first + smallest_elem))) {
       smallest_elem = right_child;
     }
 
@@ -35,13 +35,13 @@ void SiftDown(It first, It last, const std::size_t length, std::size_t index)
   }
 }
 
-template <typename It>
-void BuildHeap(It first, It last)
+template <typename It, typename Cmp = std::less<typename std::iterator_traits<It>::value_type>>
+void BuildHeap(It first, It last, const Cmp& compare = Cmp{})
 {
   auto length = std::distance(first, last);
 
-  for (std::size_t i = length / 2; i <= length / 2; --i) {
-    SiftDown(first, last, length, i);
+  for (std::size_t i = static_cast<size_t>(length / 2); i <= length / 2; --i) {
+    SiftDown(first, last, length, compare, i);
   }
 }
 
