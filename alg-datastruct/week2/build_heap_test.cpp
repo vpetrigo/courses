@@ -35,7 +35,7 @@ TEST(Build_Heap, reverse_array) {
 
 TEST(Build_Heap_class, reverse_array) {
   std::array<std::size_t, 5> arr{5, 4, 3, 2, 1};
-  HeapBuilder<std::size_t> hp(std::less<std::size_t>{});
+  HeapBuilder<std::size_t> hp{};
 
   ASSERT_FALSE(std::is_heap(arr.cbegin(), arr.cend(), std::greater<size_t> {}));
   hp.BuildHeap(arr.begin(), arr.end());
