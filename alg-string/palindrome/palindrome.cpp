@@ -3,7 +3,8 @@
 
 int can_be_palindrome(const std::string &s);
 
-int main() {
+int main() 
+{
   std::string palindrome_candidate;
 
   std::cin >> palindrome_candidate;
@@ -12,7 +13,8 @@ int main() {
   return 0;
 }
 
-int can_be_palindrome(const std::string &s) {
+int can_be_palindrome(const std::string &s) 
+{
   auto mid = std::next(std::cbegin(s), s.size() / 2);
   auto diff_it = std::mismatch(std::cbegin(s), mid, std::crbegin(s)).first;
   auto diff_index = std::distance(std::cbegin(s), diff_it);
