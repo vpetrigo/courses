@@ -2,7 +2,6 @@
 #define _PRIORITY_QUEUE_HPP_
 
 #include <functional>
-#include <iostream>
 #include <vector>
 
 template <typename T, typename Compare = std::less<T>>
@@ -36,6 +35,7 @@ class PriorityQueue {
     return top;
   }
 
+  std::size_t Size() const { return heap_.size(); }
  protected:
   std::size_t Parent(std::size_t index) { return (index - 1) / 2; }
   std::size_t LeftChild(std::size_t index) { return 2 * index + 1; }

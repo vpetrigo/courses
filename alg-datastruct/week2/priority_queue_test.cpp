@@ -38,3 +38,20 @@ TEST(Priority_Queue, big_random_array_sort) {
 
   ASSERT_TRUE(std::is_sorted(arr.cbegin(), arr.cend()));
 }
+
+TEST(Priority_Queue, size_test) {
+  PriorityQueue<std::size_t> queue;
+
+  queue.AddElement(1);
+  ASSERT_EQ(queue.Size(), 1);
+  queue.AddElement(2);
+  ASSERT_EQ(queue.Size(), 2);
+  queue.AddElement(3);
+  ASSERT_EQ(queue.Size(), 3);
+  queue.ExtractTop();
+  ASSERT_EQ(queue.Size(), 2);
+  queue.ExtractTop();
+  ASSERT_EQ(queue.Size(), 1);
+  queue.ExtractTop();
+  ASSERT_EQ(queue.Size(), 0);
+}
