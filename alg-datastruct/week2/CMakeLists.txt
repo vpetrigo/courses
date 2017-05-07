@@ -3,3 +3,6 @@ add_executable(build_heap build_heap.cpp build_heap.hpp)
 
 cxx_gtest(priority_queue_test priority_queue_test.cpp priority_queue.hpp)
 add_executable(priority_queue_example priority_queue.cpp priority_queue.hpp)
+
+cxx_gtest(db_disjoint_set_test disjoint_set_test.cpp disjoint_set.hpp)
+add_executable(disjoint_set_example disjoint_set.cpp disjoint_set.hpp)
