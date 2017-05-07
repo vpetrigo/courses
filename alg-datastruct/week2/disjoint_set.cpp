@@ -3,7 +3,8 @@
 #include <iostream>
 #include <utility>
 
-int main() {
+int main()
+{
   std::size_t n_tables, n_queries;
 
   std::cin >> n_tables >> n_queries;

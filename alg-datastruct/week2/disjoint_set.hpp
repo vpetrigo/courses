@@ -9,16 +9,19 @@ class DB_TableDisjointSet {
   // table contains id (pair.first) and number of entries (pair.second)
   using value_type = std::pair<std::size_t, std::size_t>;
 
-  explicit DB_TableDisjointSet(std::size_t size) : parent_{}, max_entries_{0} {
+  explicit DB_TableDisjointSet(std::size_t size) : parent_{}, max_entries_{0}
+  {
     parent_.resize(size);
   }
 
-  void MakeSet(const value_type& element) {
+  void MakeSet(const value_type& element)
+  {
     parent_[element.first] = element;
     max_entries_ = std::max(element.second, max_entries_);
   }
 
-  value_type& Find(std::size_t element_id) {
+  value_type& Find(std::size_t element_id)
+  {
     if (element_id != parent_[element_id].first) {
       parent_[element_id] = Find(parent_[element_id].first);
     }
@@ -26,7 +29,8 @@ class DB_TableDisjointSet {
     return parent_[element_id];
   }
 
-  std::size_t Union(std::size_t dest, std::size_t source) {
+  std::size_t Union(std::size_t dest, std::size_t source)
+  {
     auto& dest_parent = Find(dest);
     auto& source_parent = Find(source);
 
@@ -41,9 +45,10 @@ class DB_TableDisjointSet {
 
     return max_entries_;
   }
+
  private:
   std::vector<value_type> parent_;
   std::size_t max_entries_;
 };
 
-#endif // _DISJOINT_SET_HPP_
+#endif  // _DISJOINT_SET_HPP_
