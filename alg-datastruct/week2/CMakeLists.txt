@@ -7,4 +7,5 @@ add_executable(priority_queue_example priority_queue.cpp priority_queue.hpp)
 cxx_gtest(db_disjoint_set_test disjoint_set_test.cpp disjoint_set.hpp)
 add_executable(disjoint_set_example disjoint_set.cpp disjoint_set.hpp)
 
+cxx_gtest(disjoint_set_rank_test disjoint_set_rank_test.cpp disjoint_set_rank.hpp)
 add_executable(disjoint_set_rank_example disjoint_set_rank.cpp disjoint_set_rank.hpp)
