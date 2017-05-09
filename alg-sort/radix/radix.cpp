@@ -72,4 +72,3 @@ template <typename T>
 T get_digit(const T num, const int div, const int base) {
     return num / div % base;
 }
-
