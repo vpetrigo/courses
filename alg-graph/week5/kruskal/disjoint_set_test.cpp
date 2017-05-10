@@ -1,5 +1,6 @@
-#include <gtest/gtest.h>
 #include "disjoint_set.hpp"
+
+#include <gtest/gtest.h>
 
 TEST(DisjointSet, simple_test) {
   constexpr std::size_t size = 2;
