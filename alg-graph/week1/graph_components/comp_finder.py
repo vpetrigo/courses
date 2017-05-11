@@ -37,10 +37,6 @@ def explore(adj_list, u, visited):
             explore(adj_list, w, visited)
 
 
-def test():
-    pass
-
-
 def main():
     reader = (tuple(map(int, line.split())) for line in sys.stdin)
     n, m = next(reader)
