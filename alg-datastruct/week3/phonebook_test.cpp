@@ -57,3 +57,17 @@ TEST(Phonebook_HashTable, get_nonexistent_key) {
   value = "123";
   ASSERT_EQ(ht.Get(2), "123");
 }
+
+TEST(Phonebook_HashTable, delete_element) {
+  NumericHashTable ht;
+
+  ht.Add(std::make_pair(1, "Test1"));
+  ht.Add(std::make_pair(2, "Test2"));
+
+  ASSERT_EQ(ht.Get(1), "Test1");
+  ASSERT_EQ(ht.Get(2), "Test2");
+  ht.Delete(1);
+  ht.Delete(2);
+  ASSERT_EQ(ht.Get(1), "");
+  ASSERT_EQ(ht.Get(2), "");
+}
