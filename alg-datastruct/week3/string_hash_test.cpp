@@ -14,3 +14,9 @@ TEST(StringHashSet, add_delete_one_element) {
   ht.Delete("Hello");
   ASSERT_EQ(ht.Find("Hello"), ht.End());
 }
+
+TEST(StringHashFunction, hash_test) {
+  HashFunction<std::string> hf;
+
+  ASSERT_EQ(hf("world") % 5, hf("Hell0") % 5);
+}
