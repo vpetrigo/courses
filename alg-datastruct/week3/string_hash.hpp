@@ -5,7 +5,6 @@
 #include <list>
 #include <string>
 #include <vector>
-#include <iostream>
 
 constexpr std::size_t prime = 1000000007;
 constexpr std::size_t x = 263;
@@ -18,7 +17,7 @@ class HashFunction<std::string> {
  public:
   std::size_t operator()(const std::string& s) const
   {
-    auto pow_by_mod = [](std::size_t exp) {
+    auto pow_fast = [](std::size_t exp) {
       std::size_t result = 1;
       std::size_t base = x;
 
@@ -31,27 +30,27 @@ class HashFunction<std::string> {
         base = (base * base) % prime;
       }
 
-      return result;
+      return result % prime;
     };
 
     std::size_t hash_val = 0;
 
     for (std::size_t i = 0; i < s.size(); ++i) {
-      hash_val += static_cast<std::size_t>(s[i]) * pow_by_mod(i);
+      hash_val += static_cast<std::size_t>(s[i]) * pow_fast(i) % prime;
     }
 
-    return hash_val;
+    return hash_val % prime;
   }
 };
 
 template <typename T, typename Hash = HashFunction<T>>
-class HashTable {
+class HashSet {
  public:
   using value_type = T;
   using iterator = typename std::list<T>::iterator;
   using const_iterator = typename std::list<T>::const_iterator;
 
-  explicit HashTable(std::size_t bucket_size, Hash hash = Hash())
+  explicit HashSet(std::size_t bucket_size, Hash hash = Hash())
       : buckets_{bucket_size}, hash_{hash}
   {
     storage_.resize(buckets_);
@@ -92,9 +91,7 @@ class HashTable {
   }
 
   iterator End() { return storage_.back().end(); }
-
   const_iterator Cend() const { return storage_.back().cend(); }
-
   void Add(const T& elem)
   {
     if (Find(elem) == Cend()) {
@@ -110,7 +107,8 @@ class HashTable {
                           storage_[bucket_id].cend());
   }
 
-  void Delete(const T& elem) {
+  void Delete(const T& elem)
+  {
     auto elem_it = Find(elem);
 
     if (elem_it != End()) {
