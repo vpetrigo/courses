@@ -11,6 +11,7 @@ constexpr std::size_t default_table_size = 128;
 class NumericHashTable {
  public:
   using value_type = std::pair<std::size_t, std::string>;
+  using iterator = std::list<value_type>::iterator;
 
   explicit NumericHashTable(std::size_t table_size = default_table_size)
       : storage_{}, storage_size_{table_size}
@@ -18,50 +19,66 @@ class NumericHashTable {
     storage_.resize(storage_size_);
   }
 
-  void Add(const value_type& elem)
+  iterator Find(std::size_t key)
   {
-    const auto hash_val = Hash(elem.first) % storage_size_;
+    const auto hash_val = Hash(key) % storage_size_;
 
     if (!storage_[hash_val].empty()) {
-      auto it = storage_[hash_val].begin();
-      auto end = storage_[hash_val].end();
+      auto elem_it = std::find_if(
+          storage_[hash_val].begin(), storage_[hash_val].end(),
+          [&key](const value_type& elem) { return elem.first == key; });
 
-      while (it != end) {
-        if (it->first == elem.first) {
-          it->second = elem.second;
-          break;
-        }
-
-        ++it;
-      }
-
-      if (it == end) {
-        storage_[hash_val].push_back(elem);
+      if (elem_it != storage_[hash_val].end()) {
+        return elem_it;
       }
     }
+
+    return End();
+  }
+
+  iterator End() {
+    return storage_.back().end();
+  }
+
+  void Add(const value_type& elem)
+  {
+    auto elem_it = Find(elem.first);
+
+    if (elem_it != End()) {
+      elem_it->second = elem.second;
+    }
     else {
+      const auto hash_val = Hash(elem.first) % storage_size_;
+
       storage_[hash_val].push_back(elem);
     }
   }
 
   std::string& Get(const std::size_t key)
   {
-    const auto hash_val = Hash(key) % storage_size_;
+    auto elem_it = Find(key);
 
-    if (!storage_[hash_val].empty()) {
-      for (auto& e : storage_[hash_val]) {
-        if (e.first == key) {
-          return e.second;
-        }
-      }
+    if (elem_it != End()) {
+      return elem_it->second;
     }
+
+    const auto hash_val = Hash(key) % storage_size_;
 
     storage_[hash_val].emplace_back(std::make_pair(key, ""));
 
     return storage_[hash_val].back().second;
   }
 
-  
+  void Delete(const std::size_t key) {
+    auto elem_it = Find(key);
+
+    if (elem_it != End()) {
+      const auto hash_val = Hash(key) % storage_size_;
+
+      storage_[hash_val].erase(elem_it);
+    }
+  }
+
  protected:
   std::size_t Hash(std::size_t x)
   {
