@@ -22,14 +22,13 @@ install:
 before_script:
   - mkdir build
   - cd build
-  -
-    if [[ "$CC" -eq "clang" ]]; then
+  - 'if [[ "$CC" -eq "clang" ]]; then
       export CC=clang-4.0
       export CXX=clang++-4.0
     else
       export CC=gcc-6
       export CXX=g++-6
-    fi
+    fi'
   - cmake .. -DCMAKE_BUILD_TYPE=RELEASE
 
 script:
