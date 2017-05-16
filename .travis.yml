@@ -10,7 +10,7 @@ addons:
   apt:
     sources:
       - ubuntu-toolchain-r-test
-      - llvm-toolchain-trusty-4.0A
+      - llvm-toolchain-trusty-4.0
     packages:
       - gcc-6
       - clang-4.0
