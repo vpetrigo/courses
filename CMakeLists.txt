@@ -19,4 +19,4 @@ add_subdirectory(alg-datastruct)
 add_subdirectory(deps)
 
 # Downloader project
-add_subdirectory(programming/mailru-deep-c-cpp/downloader)
+# add_subdirectory(programming/mailru-deep-c-cpp/downloader)

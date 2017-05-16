@@ -1,0 +1,37 @@
+dist: trusty
+
+language: cpp
+
+compiler:
+  - clang
+  - gcc
+
+addons:
+  apt:
+    sources:
+      - ubuntu-toolchain-r-test
+      - llvm-toolchain-trusty-4.0A
+    packages:
+      - gcc-6
+      - clang-4.0
+
+install:
+  - git submodule init
+  - git submodule update --recursive
+
+before_script:
+  - mkdir build
+  - cd build
+  -
+    if [[ "$CC" -eq "clang" ]]; then
+      export CC=clang-4.0
+      export CXX=clang++-4.0
+    else
+      export CC=gcc-6
+      export CXX=g++-6
+    fi
+  - cmake .. -DCMAKE_BUILD_TYPE=RELEASE
+
+script:
+  - cmake --build . -- -j4
+  - ctest
