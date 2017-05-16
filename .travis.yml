@@ -4,6 +4,7 @@ language: cpp
 
 compiler:
   - gcc
+  - clang
 
 addons:
   apt:
@@ -12,6 +13,7 @@ addons:
       - llvm-toolchain-trusty-4.0
     packages:
       - gcc-6
+      - g++-6
       - clang-4.0
 
 install:
