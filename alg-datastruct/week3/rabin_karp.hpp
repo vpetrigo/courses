@@ -65,6 +65,8 @@ class RabinKarp {
         StrPolynomialHash(window_begin++, window_end++, coeff, prime);
 
     while (window_end != text_end + 1) {
+      // add prime to the previous hash to prevent negative value during
+      // substraction
       new_hash =
           (*std::prev(window_hash_it) + prime -
            x_p_ * static_cast<std::size_t>(*std::prev(window_begin)) % prime) %
