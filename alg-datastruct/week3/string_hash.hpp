@@ -36,10 +36,12 @@ class HashFunction<std::string> {
     std::size_t hash_val = 0;
 
     for (std::size_t i = 0; i < s.size(); ++i) {
-      hash_val += static_cast<std::size_t>(s[i]) * pow_fast(i) % prime;
+      hash_val =
+          (hash_val + static_cast<std::size_t>(s[i]) * pow_fast(i) % prime) %
+          prime;
     }
 
-    return hash_val % prime;
+    return hash_val;
   }
 };
 
