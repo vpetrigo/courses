@@ -6,7 +6,7 @@ __pycache__/
 .idea/
 
 # CMake build folder
-cmake-build-debug/
+**/*build*/*
 
 # Clang precompiled headers
 .stdafx.c*
