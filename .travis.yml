@@ -15,6 +15,7 @@ addons:
       - gcc-6
       - g++-6
       - clang-4.0
+      - ninja-build
 
 install:
   - git submodule init
@@ -31,7 +32,7 @@ before_script:
         export CC=gcc-6
         export CXX=g++-6
       fi
-  - cmake .. -DCMAKE_BUILD_TYPE=RELEASE
+  - cmake .. -G "Ninja" -DCMAKE_BUILD_TYPE=Release
 
 script:
   - cmake --build . -- -j4
