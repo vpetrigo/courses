@@ -1,0 +1,2 @@
+cxx_gtest(tree_traverse_test tree_traverse_test.cpp tree_traverse.hpp)
+add_executable(tree_traverse_example tree_traverse.cpp tree_traverse.hpp)
