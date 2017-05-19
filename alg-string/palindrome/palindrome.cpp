@@ -27,4 +27,3 @@ int can_be_palindrome(const std::string &s)
     return s.size() - diff_index - 1;
   }
 }
-
