@@ -8,7 +8,7 @@
 // 0 element - key
 // 1 element - left child index
 // 2 element - right child index
-using TreeNode = std::tuple<std::size_t, long long, long long>;
+using TreeNode = std::tuple<long long, long long, long long>;
 
 class TreeTraverse {
  public:
@@ -62,10 +62,10 @@ class TreeTraverse {
   }
 
   void CleanOrder() { order_.clear(); }
-  const std::vector<std::size_t>& GetOrder() const { return order_; }
+  const std::vector<long long>& GetOrder() const { return order_; }
  private:
   const std::vector<TreeNode>* tree_;
-  std::vector<std::size_t> order_;
+  std::vector<long long> order_;
 };
 
 #endif  // _COURSES_TREE_TRAVERSE_HPP_
