@@ -4,3 +4,4 @@ add_executable(tree_traverse_example tree_traverse.cpp tree_traverse.hpp)
 add_executable(check_tree_example check_tree.cpp)
 
 cxx_gtest(check_tree_strict_test check_tree_strict_test.cpp check_tree_strict.hpp)
+add_executable(check_tree_strict_example check_tree_strict.hpp check_tree_strict.cpp)
