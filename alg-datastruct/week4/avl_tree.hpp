@@ -21,7 +21,7 @@ struct _avl_node {
 template <typename T>
 class AVL_Tree {
  public:
-  using iterator = _avl_node *;
+  using iterator = _avl_node<T> *;
 
   AVL_Tree() : root_{nullptr} {}
   iterator Insert(const T &key)
@@ -30,7 +30,7 @@ class AVL_Tree {
       iterator hint = root_;
     }
     else {
-      root_ = new _avl_node(key);
+      root_ = new _avl_node<T>(key);
 
       return root_;
     }
@@ -47,7 +47,7 @@ class AVL_Tree {
         return Insert(hint->left_child_, key);
       }
 
-      hint->left_child_ = new _avl_node(key, hint, hint->height_ + 1);
+      hint->left_child_ = new _avl_node<T>(key, hint, hint->height_ + 1);
       // balance
       return hint->left_child_;
     }
@@ -56,7 +56,7 @@ class AVL_Tree {
         return Insert(hint->right_child_, key);
       }
 
-      hint->right_child_ = new _avl_node(key, hint, hint->height_ + 1);
+      hint->right_child_ = new _avl_node<T>(key, hint, hint->height_ + 1);
       // balance
       return hint->right_child_;
     }
@@ -64,7 +64,7 @@ class AVL_Tree {
 
  protected:
   // balance
-  void Balance(_avl_node *node)
+  void Balance(_avl_node<T> *node)
   {
     const auto height_diff = BalanceFactor(node);
 
@@ -92,15 +92,15 @@ class AVL_Tree {
     }
   }
 
-  void RightRotation(_avl_node *node) {
+  void RightRotation(_avl_node<T> *node) {
 
   }
 
-  void LeftRotation(_avl_node *node) {
+  void LeftRotation(_avl_node<T> *node) {
 
   }
 
-  int BalanceFactor(_avl_node *node) {
+  int BalanceFactor(_avl_node<T> *node) {
     const auto left_subtree_h =
         (node->left_child_) ? node->left_child_->height_ : 0;
     const auto right_subtree_h =
@@ -110,7 +110,7 @@ class AVL_Tree {
   }
   // rotation
  private:
-  _avl_node *root_;
+  _avl_node<T> *root_;
 };
 
 #endif  // _COURSES_AVL_TREE_HPP_
