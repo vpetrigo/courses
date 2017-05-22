@@ -92,6 +92,14 @@ class AVL_Tree {
     }
   }
 
+  void RightRotation(_avl_node *node) {
+
+  }
+
+  void LeftRotation(_avl_node *node) {
+
+  }
+
   int BalanceFactor(_avl_node *node) {
     const auto left_subtree_h =
         (node->left_child_) ? node->left_child_->height_ : 0;
