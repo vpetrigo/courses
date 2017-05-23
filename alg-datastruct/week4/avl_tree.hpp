@@ -72,7 +72,7 @@ class AVL_Tree {
       // right-heavy tree
       const auto right_subtree_balance = BalanceFactor(node->right_child_);
 
-      if (right_subtree_balance < -1) {
+      if (right_subtree_balance < 0) {
         // left-heavy right subtree - big left rotation
       }
       else {
@@ -83,11 +83,11 @@ class AVL_Tree {
       // left-heavy tree
       const auto left_subtree_balance = BalanceFactor(node->left_child_);
 
-      if (left_subtree_balance > 1) {
-
+      if (left_subtree_balance > 0) {
+        // right-heavy left subtree - big right rotation
       }
       else {
-
+        // small right rotation
       }
     }
   }
