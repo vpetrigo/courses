@@ -1,21 +1,17 @@
 #ifndef _COURSES_AVL_TREE_HPP_
 #define _COURSES_AVL_TREE_HPP_
 
+#include <algorithm>
 #include <memory>
 
 template <typename T>
 struct _avl_node {
-  explicit _avl_node(T key) : parent_{nullptr}, key_{key}, height_{0} {}
-  _avl_node(T key, _avl_node *parent, unsigned height)
-      : parent_{parent}, key_{key}, height_{height}
-  {
-  }
+  explicit _avl_node(T key) : key_{key} {}
 
-  _avl_node *parent_;
   _avl_node *left_child_{nullptr};
   _avl_node *right_child_{nullptr};
   T key_;
-  unsigned height_;
+  unsigned height_{1};
 };
 
 template <typename T>
@@ -24,6 +20,11 @@ class AVL_Tree {
   using iterator = _avl_node<T> *;
 
   AVL_Tree() : root_{nullptr} {}
+
+  ~AVL_Tree() {
+
+  }
+
   iterator Insert(const T &key)
   {
     if (root_ != nullptr) {
@@ -39,32 +40,22 @@ class AVL_Tree {
   iterator Insert(iterator hint, const T &key)
   {
     if (hint == nullptr) {
-      return hint;
+      return new _avl_node<T>(key);
     }
 
     if (key < hint->key_) {
-      if (hint->left_child_ != nullptr) {
-        return Insert(hint->left_child_, key);
-      }
-
-      hint->left_child_ = new _avl_node<T>(key, hint, hint->height_ + 1);
-      // balance
-      return hint->left_child_;
+      hint->left_child_ = Insert(hint->left_child_, key);
     }
     else {
-      if (hint->right_child_ != nullptr) {
-        return Insert(hint->right_child_, key);
-      }
-
-      hint->right_child_ = new _avl_node<T>(key, hint, hint->height_ + 1);
-      // balance
-      return hint->right_child_;
+      hint->right_child_ = Insert(hint->right_child_, key);
     }
+
+    return Balance(hint);
   }
 
  protected:
   // balance
-  void Balance(_avl_node<T> *node)
+  iterator Balance(iterator node)
   {
     const auto height_diff = BalanceFactor(node);
 
@@ -74,10 +65,10 @@ class AVL_Tree {
 
       if (right_subtree_balance < 0) {
         // left-heavy right subtree - big left rotation
+        node->right_child_ = RightRotation(node->right_child_);
       }
-      else {
-        // small left rotation
-      }
+      // small left rotation
+      return LeftRotation(node);
     }
     else if (height_diff < -1) {
       // left-heavy tree
@@ -85,28 +76,55 @@ class AVL_Tree {
 
       if (left_subtree_balance > 0) {
         // right-heavy left subtree - big right rotation
+        node->left_child_ = LeftRotation(node->left_child_);
       }
-      else {
-        // small right rotation
-      }
+      // small right rotation
+      return RightRotation(node);
     }
+    // do not need to do balancing here
+    return node;
   }
 
-  void RightRotation(_avl_node<T> *node) {
+  iterator RightRotation(iterator node) {
+    iterator left_child = node->left_child_;
+    node->left_child_ = left_child->right_child_;
+    left_child->right_child_ = node;
+    FixHeight(left_child);
+    FixHeight(node);
 
+    return left_child;
   }
 
-  void LeftRotation(_avl_node<T> *node) {
+  iterator LeftRotation(iterator node) {
+    iterator right_child = node->right_child_;
+    node->right_child_ = right_child->left_child_;
+    right_child->left_child_ = node;
+    FixHeight(right_child);
+    FixHeight(node);
 
+    return right_child;
   }
 
-  int BalanceFactor(_avl_node<T> *node) {
-    const auto left_subtree_h =
-        (node->left_child_) ? node->left_child_->height_ : 0;
-    const auto right_subtree_h =
-        (node->right_child_) ? node->right_child_->height_ : 0;
+  iterator FindMin(iterator node) {
+    return (node->left_child_) ? FindMin(node->left_child_) : node;
+  }
+
+  unsigned GetNodeHeight(iterator node) {
+    return (node != nullptr) ? node->height_ : 0;
+  }
+
+  int BalanceFactor(iterator node) {
+    const auto left_subtree_h = GetNodeHeight(node->left_child_);
+    const auto right_subtree_h = GetNodeHeight(node->right_child_);
 
     return static_cast<int>(right_subtree_h - left_subtree_h);
+  }
+
+  void FixHeight(iterator node) {
+    const auto left_subtree_h = GetNodeHeight(node->left_child_);
+    const auto right_subtree_h = GetNodeHeight(node->right_child_);
+
+    node->height_ = std::max(left_subtree_h, right_subtree_h) + 1;
   }
   // rotation
  private:
