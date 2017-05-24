@@ -53,6 +53,64 @@ class AVL_Tree {
     return Balance(hint);
   }
 
+  iterator Remove(const T& key) {
+    if (root_ != nullptr) {
+      return Remove(root_, key);
+    }
+
+    return nullptr;
+  }
+
+  iterator Remove(iterator hint, const T& key) {
+    if (hint == nullptr) {
+      return nullptr;
+    }
+
+    if (key < hint->key_) {
+      hint->left_child_ = Remove(hint->left_child_, key);
+    }
+    else if (key > hint->key_) {
+      hint->right_child_ = Remove(hint->right_child_, key);
+    }
+    else {
+      auto left = hint->left_child_;
+      auto right = hint->right_child_;
+
+      delete hint;
+
+      if (right == nullptr) {
+        return left;
+      }
+
+      auto min = FindMin(right);
+
+      min->right_child_ = RemoveMin(right);
+      min->left_child_ = left;
+
+      return Balance(min);
+    }
+
+    return Balance(hint);
+  }
+
+  const T *Find(const T& key) const {
+    return Find(root_, key);
+  }
+
+  const T *Find(iterator hint, const T& key) const {
+    if (hint == nullptr) {
+      return nullptr;
+    }
+
+    if (key < hint->key_) {
+      return Find(hint->left_child_, key);
+    }
+    else if (key > hint->key_) {
+      return Find(hint->right_child_, key);
+    }
+
+     return &hint->key_;
+  }
  protected:
   // balance
   iterator Balance(iterator node)
@@ -107,6 +165,16 @@ class AVL_Tree {
 
   iterator FindMin(iterator node) {
     return (node->left_child_) ? FindMin(node->left_child_) : node;
+  }
+
+  iterator RemoveMin(iterator node) {
+    if(node->left_child_ == nullptr) {
+      return node->right_child_;
+    }
+
+    node->left_child_ = RemoveMin(node->left_child_);
+
+    return Balance(node);
   }
 
   unsigned GetNodeHeight(iterator node) {
