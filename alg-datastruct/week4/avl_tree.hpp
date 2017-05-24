@@ -3,6 +3,7 @@
 
 #include <algorithm>
 #include <memory>
+#include <iostream>
 
 template <typename T>
 struct _avl_node {
@@ -22,19 +23,16 @@ class AVL_Tree {
   AVL_Tree() : root_{nullptr} {}
 
   ~AVL_Tree() {
-
+    if (root_ != nullptr) {
+      PostOrderDelete(root_);
+    }
   }
 
   iterator Insert(const T &key)
   {
-    if (root_ != nullptr) {
-      iterator hint = root_;
-    }
-    else {
-      root_ = new _avl_node<T>(key);
+    root_ = Insert(root_, key);
 
-      return root_;
-    }
+    return root_;
   }
 
   iterator Insert(iterator hint, const T &key)
@@ -111,11 +109,17 @@ class AVL_Tree {
 
      return &hint->key_;
   }
+
+  int GetRootHeight() const {
+    return GetNodeHeight(root_);
+  }
  protected:
   // balance
   iterator Balance(iterator node)
   {
     const auto height_diff = BalanceFactor(node);
+
+    FixHeight(node);
 
     if (height_diff > 1) {
       // right-heavy tree
@@ -147,8 +151,8 @@ class AVL_Tree {
     iterator left_child = node->left_child_;
     node->left_child_ = left_child->right_child_;
     left_child->right_child_ = node;
-    FixHeight(left_child);
     FixHeight(node);
+    FixHeight(left_child);
 
     return left_child;
   }
@@ -157,8 +161,8 @@ class AVL_Tree {
     iterator right_child = node->right_child_;
     node->right_child_ = right_child->left_child_;
     right_child->left_child_ = node;
-    FixHeight(right_child);
     FixHeight(node);
+    FixHeight(right_child);
 
     return right_child;
   }
@@ -177,15 +181,12 @@ class AVL_Tree {
     return Balance(node);
   }
 
-  unsigned GetNodeHeight(iterator node) {
+  unsigned GetNodeHeight(iterator node) const {
     return (node != nullptr) ? node->height_ : 0;
   }
 
-  int BalanceFactor(iterator node) {
-    const auto left_subtree_h = GetNodeHeight(node->left_child_);
-    const auto right_subtree_h = GetNodeHeight(node->right_child_);
-
-    return static_cast<int>(right_subtree_h - left_subtree_h);
+  int BalanceFactor(iterator node) const {
+    return static_cast<int>(GetNodeHeight(node->right_child_) - GetNodeHeight(node->left_child_));
   }
 
   void FixHeight(iterator node) {
@@ -194,7 +195,18 @@ class AVL_Tree {
 
     node->height_ = std::max(left_subtree_h, right_subtree_h) + 1;
   }
-  // rotation
+
+  void PostOrderDelete(iterator node) {
+    if (node->left_child_ != nullptr) {
+      PostOrderDelete(node->left_child_);
+    }
+
+    if (node->right_child_ != nullptr) {
+      PostOrderDelete(node->right_child_);
+    }
+
+    delete node;
+  }
  private:
   _avl_node<T> *root_;
 };
