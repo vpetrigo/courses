@@ -3,7 +3,6 @@
 
 #include <algorithm>
 #include <memory>
-#include <iostream>
 
 template <typename T>
 struct _avl_node {
@@ -22,19 +21,37 @@ class AVL_Tree {
 
   AVL_Tree() : root_{nullptr} {}
 
-  ~AVL_Tree() {
+  ~AVL_Tree()
+  {
     if (root_ != nullptr) {
       PostOrderDelete(root_);
     }
   }
 
-  iterator Insert(const T &key)
-  {
-    root_ = Insert(root_, key);
+  AVL_Tree(const AVL_Tree& tree) = delete;
+  AVL_Tree& operator=(const AVL_Tree& tree) = delete;
 
-    return root_;
+  AVL_Tree(AVL_Tree &&tree) noexcept : root_{std::move(tree.root_)} {}
+
+  AVL_Tree &operator=(AVL_Tree &&tree) noexcept
+  {
+    root_ = std::move(tree.root_);
+
+    return *this;
   }
 
+  void Insert(const T &key) { root_ = Insert(root_, key); }
+
+  void Remove(const T &key)
+  {
+    root_ = Remove(root_, key);
+  }
+
+  const T *Find(const T &key) const { return Find(root_, key); }
+
+  int GetRootHeight() const { return GetNodeHeight(root_); }
+
+ protected:
   iterator Insert(iterator hint, const T &key)
   {
     if (hint == nullptr) {
@@ -51,15 +68,8 @@ class AVL_Tree {
     return Balance(hint);
   }
 
-  iterator Remove(const T& key) {
-    if (root_ != nullptr) {
-      return Remove(root_, key);
-    }
-
-    return nullptr;
-  }
-
-  iterator Remove(iterator hint, const T& key) {
+  iterator Remove(iterator hint, const T &key)
+  {
     if (hint == nullptr) {
       return nullptr;
     }
@@ -91,11 +101,8 @@ class AVL_Tree {
     return Balance(hint);
   }
 
-  const T *Find(const T& key) const {
-    return Find(root_, key);
-  }
-
-  const T *Find(iterator hint, const T& key) const {
+  const T *Find(iterator hint, const T &key) const
+  {
     if (hint == nullptr) {
       return nullptr;
     }
@@ -107,13 +114,9 @@ class AVL_Tree {
       return Find(hint->right_child_, key);
     }
 
-     return &hint->key_;
+    return &hint->key_;
   }
 
-  int GetRootHeight() const {
-    return GetNodeHeight(root_);
-  }
- protected:
   // balance
   iterator Balance(iterator node)
   {
@@ -147,7 +150,8 @@ class AVL_Tree {
     return node;
   }
 
-  iterator RightRotation(iterator node) {
+  iterator RightRotation(iterator node)
+  {
     iterator left_child = node->left_child_;
     node->left_child_ = left_child->right_child_;
     left_child->right_child_ = node;
@@ -157,7 +161,8 @@ class AVL_Tree {
     return left_child;
   }
 
-  iterator LeftRotation(iterator node) {
+  iterator LeftRotation(iterator node)
+  {
     iterator right_child = node->right_child_;
     node->right_child_ = right_child->left_child_;
     right_child->left_child_ = node;
@@ -167,12 +172,14 @@ class AVL_Tree {
     return right_child;
   }
 
-  iterator FindMin(iterator node) {
+  iterator FindMin(iterator node)
+  {
     return (node->left_child_) ? FindMin(node->left_child_) : node;
   }
 
-  iterator RemoveMin(iterator node) {
-    if(node->left_child_ == nullptr) {
+  iterator RemoveMin(iterator node)
+  {
+    if (node->left_child_ == nullptr) {
       return node->right_child_;
     }
 
@@ -181,22 +188,27 @@ class AVL_Tree {
     return Balance(node);
   }
 
-  unsigned GetNodeHeight(iterator node) const {
+  unsigned GetNodeHeight(iterator node) const
+  {
     return (node != nullptr) ? node->height_ : 0;
   }
 
-  int BalanceFactor(iterator node) const {
-    return static_cast<int>(GetNodeHeight(node->right_child_) - GetNodeHeight(node->left_child_));
+  int BalanceFactor(iterator node) const
+  {
+    return static_cast<int>(GetNodeHeight(node->right_child_) -
+                            GetNodeHeight(node->left_child_));
   }
 
-  void FixHeight(iterator node) {
+  void FixHeight(iterator node)
+  {
     const auto left_subtree_h = GetNodeHeight(node->left_child_);
     const auto right_subtree_h = GetNodeHeight(node->right_child_);
 
     node->height_ = std::max(left_subtree_h, right_subtree_h) + 1;
   }
 
-  void PostOrderDelete(iterator node) {
+  void PostOrderDelete(iterator node)
+  {
     if (node->left_child_ != nullptr) {
       PostOrderDelete(node->left_child_);
     }
@@ -207,6 +219,7 @@ class AVL_Tree {
 
     delete node;
   }
+
  private:
   _avl_node<T> *root_;
 };
