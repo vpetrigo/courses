@@ -104,18 +104,13 @@ class AVL_Tree {
 
   const T *Find(iterator hint, const T &key) const
   {
-    if (hint == nullptr) {
-      return nullptr;
+    const_iterator it = hint;
+
+    while (it != nullptr && it->key_ != key) {
+      it = (key < it->key_) ? it->left_child_ : it->right_child_;
     }
 
-    if (key < hint->key_) {
-      return Find(hint->left_child_, key);
-    }
-    else if (key > hint->key_) {
-      return Find(hint->right_child_, key);
-    }
-
-    return &hint->key_;
+    return (it != nullptr) ? &it->key_ : nullptr;
   }
 
   // balance
