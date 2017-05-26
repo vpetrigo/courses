@@ -2,7 +2,9 @@
 #define _COURSES_AVL_TREE_HPP_
 
 #include <algorithm>
+#include <list>
 #include <memory>
+#include <stack>
 
 template <typename T>
 struct _avl_node {
@@ -29,10 +31,10 @@ class AVL_Tree {
     }
   }
 
-  AVL_Tree(const AVL_Tree& tree) = delete;
-  AVL_Tree& operator=(const AVL_Tree& tree) = delete;
+  AVL_Tree(const AVL_Tree &tree) = delete;
+  AVL_Tree &operator=(const AVL_Tree &tree) = delete;
 
-  AVL_Tree(AVL_Tree &&tree) noexcept : root_{std::move(tree.root_)} {}
+  AVL_Tree(AVL_Tree &&tree) noexcept : root_{std::move(tree.root_)}, __path{} {}
 
   AVL_Tree &operator=(AVL_Tree &&tree) noexcept
   {
@@ -41,34 +43,30 @@ class AVL_Tree {
     return *this;
   }
 
-  void Insert(const T &key) { root_ = Insert(root_, key); }
-
-  void Remove(const T &key)
+  void Insert(const T &key)
   {
-    root_ = Remove(root_, key);
+    auto it = &root_;
+
+    while (*it != nullptr) {
+      __path.push(it);
+      it = (key < (*it)->key_) ? &(*it)->left_child_ : &(*it)->right_child_;
+    }
+
+    *it = new _avl_node<T>(key);
+
+    while (!__path.empty()) {
+      *__path.top() = Balance(*__path.top());
+      __path.pop();
+    }
   }
+
+  void Remove(const T &key) { root_ = Remove(root_, key); }
 
   const T *Find(const T &key) const { return Find(root_, key); }
 
   int GetRootHeight() const { return GetNodeHeight(root_); }
 
  protected:
-  iterator Insert(iterator hint, const T &key)
-  {
-    if (hint == nullptr) {
-      return new _avl_node<T>(key);
-    }
-
-    if (key < hint->key_) {
-      hint->left_child_ = Insert(hint->left_child_, key);
-    }
-    else {
-      hint->right_child_ = Insert(hint->right_child_, key);
-    }
-
-    return Balance(hint);
-  }
-
   iterator Remove(iterator hint, const T &key)
   {
     if (hint == nullptr) {
@@ -224,6 +222,7 @@ class AVL_Tree {
 
  private:
   _avl_node<T> *root_;
+  std::stack<iterator *> __path;
 };
 
 #endif  // _COURSES_AVL_TREE_HPP_
