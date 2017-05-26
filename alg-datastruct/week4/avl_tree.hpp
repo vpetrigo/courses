@@ -18,6 +18,7 @@ template <typename T>
 class AVL_Tree {
  public:
   using iterator = _avl_node<T> *;
+  using const_iterator = const _avl_node<T> *;
 
   AVL_Tree() : root_{nullptr} {}
 
@@ -172,9 +173,15 @@ class AVL_Tree {
     return right_child;
   }
 
-  iterator FindMin(iterator node)
+  iterator FindMin(iterator node) const
   {
-    return (node->left_child_) ? FindMin(node->left_child_) : node;
+    iterator min_it = node;
+
+    while (min_it->left_child_ != nullptr) {
+      min_it = node->left_child_;
+    }
+
+    return min_it;
   }
 
   iterator RemoveMin(iterator node)
@@ -188,12 +195,12 @@ class AVL_Tree {
     return Balance(node);
   }
 
-  unsigned GetNodeHeight(iterator node) const
+  unsigned GetNodeHeight(const_iterator node) const
   {
     return (node != nullptr) ? node->height_ : 0;
   }
 
-  int BalanceFactor(iterator node) const
+  int BalanceFactor(const_iterator node) const
   {
     return static_cast<int>(GetNodeHeight(node->right_child_) -
                             GetNodeHeight(node->left_child_));
