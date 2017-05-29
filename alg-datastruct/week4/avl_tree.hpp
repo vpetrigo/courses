@@ -10,10 +10,18 @@ template <typename T>
 struct _avl_node {
   explicit _avl_node(T key) : key_{key} {}
 
+  void UpdateSize() noexcept {
+    const auto lsub_tree_size = (left_child_ != nullptr) ? left_child_->subtree_size_ : 0;
+    const auto rsub_tree_size = (right_child_ != nullptr) ? right_child_->subtree_size_ : 0;
+
+    subtree_size_ = lsub_tree_size + rsub_tree_size + 1;
+  }
+
   _avl_node *left_child_{nullptr};
   _avl_node *right_child_{nullptr};
   T key_;
   unsigned height_{1};
+  std::size_t subtree_size_{1};
 };
 
 template <typename T>
@@ -56,6 +64,7 @@ class AVL_Tree {
 
     while (!__path.empty()) {
       *__path.top() = Balance(*__path.top());
+      (*__path.top())->UpdateSize();
       __path.pop();
     }
   }
@@ -65,6 +74,8 @@ class AVL_Tree {
   const T *Find(const T &key) const { return Find(root_, key); }
 
   int GetRootHeight() const { return GetNodeHeight(root_); }
+
+  std::size_t GetRootSubtreeSize() const { return root_->subtree_size_; }
 
  protected:
   iterator Remove(iterator hint, const T &key)
@@ -93,9 +104,12 @@ class AVL_Tree {
 
       min->right_child_ = RemoveMin(right);
       min->left_child_ = left;
+      min->UpdateSize();
 
       return Balance(min);
     }
+
+    hint->UpdateSize();
 
     return Balance(hint);
   }
@@ -151,6 +165,8 @@ class AVL_Tree {
     left_child->right_child_ = node;
     FixHeight(node);
     FixHeight(left_child);
+    node->UpdateSize();
+    left_child->UpdateSize();
 
     return left_child;
   }
@@ -162,6 +178,8 @@ class AVL_Tree {
     right_child->left_child_ = node;
     FixHeight(node);
     FixHeight(right_child);
+    node->UpdateSize();
+    right_child->UpdateSize();
 
     return right_child;
   }

@@ -43,3 +43,37 @@ TEST(AVL_TreeTest, remove_multiple_elements) {
     }
   }
 }
+
+TEST(AVL_TreeTest, subtree_size) {
+  AVL_Tree<std::size_t> tree;
+  constexpr std::size_t n_elems{100};
+
+  for (std::size_t i = 0; i < n_elems; ++i) {
+    tree.Insert(i);
+  }
+
+  ASSERT_EQ(tree.GetRootSubtreeSize(), n_elems);
+}
+
+TEST(AVL_TreeTest, subtree_size_with_remove) {
+  AVL_Tree<std::size_t> tree;
+  constexpr std::size_t n_elems{100};
+
+  for (std::size_t i = 0; i < n_elems; ++i) {
+    tree.Insert(i);
+  }
+
+  ASSERT_EQ(tree.GetRootSubtreeSize(), n_elems);
+
+  for (std::size_t i = 0; i < n_elems / 2; ++i) {
+    tree.Remove(i);
+  }
+
+  ASSERT_EQ(tree.GetRootSubtreeSize(), n_elems / 2);
+
+  for (std::size_t i = 0; i < n_elems / 2; ++i) {
+    tree.Insert(i + n_elems);
+  }
+
+  ASSERT_EQ(tree.GetRootSubtreeSize(), n_elems);
+}
