@@ -10,9 +10,12 @@ template <typename T>
 struct _avl_node {
   explicit _avl_node(T key) : key_{key} {}
 
-  void UpdateSize() noexcept {
-    const auto lsub_tree_size = (left_child_ != nullptr) ? left_child_->subtree_size_ : 0;
-    const auto rsub_tree_size = (right_child_ != nullptr) ? right_child_->subtree_size_ : 0;
+  void UpdateSize() noexcept
+  {
+    const auto lsub_tree_size =
+        (left_child_ != nullptr) ? left_child_->subtree_size_ : 0;
+    const auto rsub_tree_size =
+        (right_child_ != nullptr) ? right_child_->subtree_size_ : 0;
 
     subtree_size_ = lsub_tree_size + rsub_tree_size + 1;
   }
