@@ -21,6 +21,7 @@ int main() {
     for (std::size_t i = 0; i < n; ++i) {
         ofs << dist(gen) << ' ';
     }
+    
     ofs << std::endl;
 
     return 0;
