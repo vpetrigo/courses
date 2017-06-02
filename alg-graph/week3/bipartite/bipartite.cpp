@@ -98,6 +98,7 @@ void PrintShortestPath(const PrevRepr &prev, VerticeType from, VerticeType to) {
     path.push_back(cur_node);
     cur_node = prev[cur_node];
   }
+  
   path.push_back(from);
 
   std::reverse(path.begin(), path.end());
@@ -107,6 +108,7 @@ void PrintShortestPath(const PrevRepr &prev, VerticeType from, VerticeType to) {
     to_output += std::to_string(e + 1);
     to_output += " -> ";
   }
+  
   to_output += "end";
 
   std::cout << to_output << std::endl;
