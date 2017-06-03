@@ -20,6 +20,7 @@ int main() {
   auto graph = create_graph(n, m);
   VerticeType from, to;
   std::cin >> from >> to;
+  
   auto result = bfs(graph, from - 1, to - 1);
 
   std::cout << result[to - 1] << std::endl;
