@@ -7,7 +7,7 @@ import re
 
 def main():
     pnum = re.fullmatch("^19\d{9}$", input())
-    print("Yes" if pnum else "No")  
+    print("Yes" if pnum else "No")
 
 
 if __name__ == "__main__":
