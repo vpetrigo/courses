@@ -8,6 +8,7 @@ MODULE_LICENSE("Dual BSD/GPL");
 int __init solution_init(void)
 {
 	pr_info("solution: [kernel_mooc] module initialization\n");
+	return 0;
 }
 
 void __exit solution_exit(void)
