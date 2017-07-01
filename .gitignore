@@ -15,5 +15,11 @@ __pycache__/
 .vscode/
 
 # C/C++ output
-*.exe
-*.out
+**/*.exe
+**/*.out
+**/*.o
+
+# Linux kernel build
+**/*.o.cmd
+**/*.symvers
+**/*.order
