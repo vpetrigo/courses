@@ -1,2 +1,3 @@
 BasedOnStyle: Google
 BreakBeforeBraces: Stroustrup
+ColumnLimit: 80
