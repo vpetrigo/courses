@@ -23,3 +23,7 @@ __pycache__/
 **/*.o.cmd
 **/*.symvers
 **/*.order
+**/*.mod.c
+**/*.ko
+**/*.ko.cmd
+**/.tmp_versions/
