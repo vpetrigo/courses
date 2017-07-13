@@ -12,16 +12,22 @@ MODULE_LICENSE("Dual BSD/GPL");
 #define TOPDIR_NAME "my_kobject"
 
 struct solution_dev {
-	struct kobject kobj;
+	unsigned read_ops_counter;
+	unsigned write_ops_counter;
 };
 
-static struct solution_dev sdev;
-static const struct kobject *top_dir;
+static struct solution_dev sdev = {
+	.read_ops_counter = 0,
+	.write_ops_counter = 0
+};
+
+static struct kobject *top_dir = NULL;
 
 ssize_t sol_show(struct kobject *kobj, struct kobj_attribute *attr, char *buf)
 {
+	++sdev.read_ops_counter;
 	pr_debug("solution: call show\n");
-	return 0;
+	return scnprintf(buf, PAGE_SIZE, "%u\n", sdev.read_ops_counter);
 }
 
 ssize_t sol_store(struct kobject *kobj, struct kobj_attribute *attr,
