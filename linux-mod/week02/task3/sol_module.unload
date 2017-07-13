@@ -1,0 +1,10 @@
+#!/bin/bash
+
+MODULE=solution
+
+if [[ -z `lsmod | grep -e "^$MODULE\b"` ]]; then
+	exit 1
+fi
+
+rmmod $MODULE
+rm -f /dev/solution_node

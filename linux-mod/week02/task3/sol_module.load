@@ -1,0 +1,6 @@
+#!/bin/bash
+
+MODULE=solution
+
+insmod $MODULE.ko || exit 1
+mknod /dev/solution_node c 240 0
