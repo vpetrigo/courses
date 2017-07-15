@@ -7,7 +7,7 @@
 #include <linux/stat.h>
 #include <linux/printk.h>
 
-MODULE_AUTHOR("Vladimir Petrigo");
+MODULE_AUTHOR("Vladimir Petrigo <taenaru@gmail.com>");
 MODULE_LICENSE("Dual BSD/GPL");
 
 #define TOPDIR_NAME "my_kobject"
