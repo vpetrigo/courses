@@ -84,7 +84,7 @@ ssize_t solution_read(struct file *filp, char __user *to, size_t size, loff_t *p
 
 	if (copy_to_user(to, buf, retval) != 0)
 		retval = -EFAULT;
-	
+
 	*pos += retval;
 end:
 	return retval;
