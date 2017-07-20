@@ -10,6 +10,7 @@
 #include <linux/printk.h>
 #include <linux/kdev_t.h>
 #include <linux/uaccess.h>
+#include <linux/device.h>
 
 MODULE_AUTHOR("Vladimir Petrigo");
 MODULE_LICENSE("Dual BSD/GPL");
