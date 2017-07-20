@@ -11,6 +11,7 @@
 #include <linux/printk.h>
 #include <linux/kdev_t.h>
 #include <linux/uaccess.h>
+#include <linux/string.h>
 
 MODULE_AUTHOR("Vladimir Petrigo");
 MODULE_LICENSE("Dual BSD/GPL");
@@ -20,8 +21,8 @@ MODULE_LICENSE("Dual BSD/GPL");
 #define PREDEF_MAJOR 240
 #define PREDEF_MINOR 0
 #define DEV_NAME "solution_node"
-#define PRINTBUF_SIZE 128
-#define CHAR_DEV_MEM 1024
+#define PRINTBUF_SIZE 1024
+#define CHAR_DEV_MEM 255
 
 struct solution_dev {
 	struct kobj_attribute sd_file;
@@ -85,7 +86,7 @@ ssize_t solution_read(struct file *filp, char __user *to, size_t size, loff_t *p
 
 	pr_debug("solution: [kernel_mooc] read in session %zu\n", sess_p->session_no);
 	pr_debug("solution: [kernel_mooc] request %zu\n", size);
-	pr_debug("solution: [kernel_mooc] position %ld\n", *pos);
+	pr_debug("solution: [kernel_mooc] position %lld\n", *pos);
 
 	if (*pos == 0)
 	{
@@ -98,17 +99,18 @@ ssize_t solution_read(struct file *filp, char __user *to, size_t size, loff_t *p
 		}
 
 		allocate = true;
-		retval = scnprintf(buf, PRINTBUF_SIZE, "%zu", sess_p->session_no);	
+		size = scnprintf(buf, PRINTBUF_SIZE, "%zu", sess_p->session_no);
 	}
 	else
 	{
 		pr_debug("solution: [kernel_mooc] read buffer session %zu\n", sess_p->session_no);
 		pr_debug("solution: [kernel_mooc] buffer data size %zu\n", sess_p->write_bytes);
+		pr_debug("solution: [kernel_mooc] buffer data %s\n", sess_p->buf);
+		size = sess_p->write_bytes;
 		buf = sess_p->buf;
-		retval = 1;
 	}
 	
-	if (copy_to_user(to, buf, retval) != 0)
+	if (copy_to_user(to, buf, size) != 0)
 	{
 		retval = -EFAULT;
 		goto end;
@@ -116,8 +118,11 @@ ssize_t solution_read(struct file *filp, char __user *to, size_t size, loff_t *p
 
 	if (allocate)
 		kfree(buf);
+	else
+		sess_p->write_bytes = 0;
 
-	*pos += retval;
+	*pos += size;
+	retval = size;
 end:
 	return retval;
 }
@@ -138,7 +143,6 @@ ssize_t solution_write(struct file *filp, const char __user *from, size_t size, 
 	pr_debug("solution: [kernel_mooc] write %zu\n", size);
 	pr_debug("solution: [kernel_mooc] data %s\n", sess_p->buf);
 	sess_p->write_bytes = size;
-	filp->f_pos += size;
 	retval = size;
 out:
 	return retval; 
@@ -157,6 +161,7 @@ int solution_open(struct inode *inode, struct file *filp)
 	sess_p->sdev_p = sdev_p;
 	sess_p->session_no = cur_session++;
 	sess_p->buf = kmalloc(CHAR_DEV_MEM, GFP_KERNEL);
+	memset(sess_p->buf, 0, CHAR_DEV_MEM);
 	sess_p->write_bytes = 0;
 	pr_debug("solution: open file\n");
 	pr_debug("solution: [kernel_mooc] session %zu\n", sess_p->session_no);
