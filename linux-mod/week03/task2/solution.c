@@ -21,7 +21,7 @@ MODULE_LICENSE("Dual BSD/GPL");
 #define PREDEF_MINOR 0
 #define DEV_NAME "solution_node"
 #define PRINTBUF_SIZE 128
-#define CHAR_DEV_MEM 256
+#define CHAR_DEV_MEM 1024
 
 struct solution_dev {
 	struct kobj_attribute sd_file;
@@ -33,11 +33,16 @@ struct solution_char_dev {
 	struct cdev s_cdev;
 	dev_t id;
 	ssize_t access_counter;
-	ssize_t write_bytes;
-	char buf[CHAR_DEV_MEM];
-	size_t size;
+};
+
+struct session_handler {
+	struct solution_char_dev *sdev_p;
+	char *buf;
+	size_t write_bytes;
 	size_t session_no;
 };
+
+size_t cur_session = 0;
 
 #define to_solution_cdev(x) container_of((x), struct solution_char_dev, s_cdev)
 
@@ -75,14 +80,17 @@ ssize_t solution_read(struct file *filp, char __user *to, size_t size, loff_t *p
 {
 	char *buf;
 	bool allocate = false;
-	struct solution_char_dev *sdev_p = to_solution_cdev(filp->private_data);
+	struct session_handler *sess_p = filp->private_data;
 	int retval = 0;
 
-	pr_debug("solution: read from file\n");
+	pr_debug("solution: [kernel_mooc] read in session %zu\n", sess_p->session_no);
+	pr_debug("solution: [kernel_mooc] request %zu\n", size);
+	pr_debug("solution: [kernel_mooc] position %ld\n", *pos);
 
 	if (*pos == 0)
 	{
 		buf = kmalloc(PRINTBUF_SIZE, GFP_KERNEL);
+
 		if (!buf)
 		{
 			retval = -ENOMEM;
@@ -90,16 +98,15 @@ ssize_t solution_read(struct file *filp, char __user *to, size_t size, loff_t *p
 		}
 
 		allocate = true;
-		retval = scnprintf(buf, PRINTBUF_SIZE, "%zu", sdev_p->session_no - 1);	
+		retval = scnprintf(buf, PRINTBUF_SIZE, "%zu", sess_p->session_no);	
 	}
 	else
 	{
-		buf = sdev_p->buf;
-		retval = sdev_p->write_bytes;
+		pr_debug("solution: [kernel_mooc] read buffer session %zu\n", sess_p->session_no);
+		pr_debug("solution: [kernel_mooc] buffer data size %zu\n", sess_p->write_bytes);
+		buf = sess_p->buf;
+		retval = 1;
 	}
-
-	pr_debug("solution: access %zu, write bytes %zu\n", sdev_p->access_counter,
-			sdev_p->write_bytes);
 	
 	if (copy_to_user(to, buf, retval) != 0)
 	{
@@ -109,6 +116,7 @@ ssize_t solution_read(struct file *filp, char __user *to, size_t size, loff_t *p
 
 	if (allocate)
 		kfree(buf);
+
 	*pos += retval;
 end:
 	return retval;
@@ -116,16 +124,20 @@ end:
 
 ssize_t solution_write(struct file *filp, const char __user *from, size_t size, loff_t *pos)
 {
-	struct solution_char_dev *sdev_p = to_solution_cdev(filp->private_data);
+	struct session_handler *sess_p = filp->private_data;
 	ssize_t retval;
-	
-	if (copy_from_user(sdev_p->buf, from, size))
+
+	pr_debug("solution: [kernel_mooc] write in session %zu\n", sess_p->session_no);
+
+	if (copy_from_user(sess_p->buf, from, size))
 	{
 		retval = -EFAULT;
 		goto out;
 	}
 
-	sdev_p->write_bytes = size;
+	pr_debug("solution: [kernel_mooc] write %zu\n", size);
+	pr_debug("solution: [kernel_mooc] data %s\n", sess_p->buf);
+	sess_p->write_bytes = size;
 	filp->f_pos += size;
 	retval = size;
 out:
@@ -140,40 +152,17 @@ int solution_release(struct inode *inode, struct file *filp)
 int solution_open(struct inode *inode, struct file *filp)
 {
 	struct solution_char_dev *sdev_p = container_of(inode->i_cdev, struct solution_char_dev, s_cdev); 
+	struct session_handler *sess_p = kmalloc(sizeof(struct session_handler), GFP_KERNEL);
 
+	sess_p->sdev_p = sdev_p;
+	sess_p->session_no = cur_session++;
+	sess_p->buf = kmalloc(CHAR_DEV_MEM, GFP_KERNEL);
+	sess_p->write_bytes = 0;
 	pr_debug("solution: open file\n");
-	filp->private_data = sdev_p;
-	++sdev_p->access_counter;
-	++sdev_p->session_no;
+	pr_debug("solution: [kernel_mooc] session %zu\n", sess_p->session_no);
+	filp->private_data = sess_p;
 
 	return 0;
-}
-
-loff_t solution_seek(struct file *filp, loff_t offset, int whence)
-{
-	struct solution_char_dev *sdev_p = filp->private_data;
-	loff_t newpos;
-
-	switch(whence)
-	{
-		case SEEK_SET:
-			newpos = offset;
-			break;
-		case SEEK_CUR:
-			newpos = filp->f_pos + offset;
-			break;
-		case SEEK_END:
-			newpos = sdev_p->size + offset;
-			break;
-		default:
-			return -EINVAL;
-	}
-
-	if (newpos < 0)
-		return -EINVAL;
-
-	filp->f_pos = newpos;
-	return newpos;
 }
 
 static struct solution_dev sdev = {
@@ -184,10 +173,7 @@ static struct solution_dev sdev = {
 
 static struct solution_char_dev sdev_char = {
 	.id = MKDEV(PREDEF_MAJOR, PREDEF_MINOR),
-	.write_bytes = 0,
 	.access_counter = 0,
-	.session_no = 0,
-	.size = 0
 };
 
 static struct file_operations solution_fops = {
@@ -196,7 +182,6 @@ static struct file_operations solution_fops = {
 	.write = solution_write,
 	.open = solution_open,
 	.release = solution_release,
-	.llseek = solution_seek
 };
 
 static int __init solution_init(void)
