@@ -85,8 +85,7 @@ ssize_t solution_read(struct file *filp, char __user *to, size_t size, loff_t *p
 	int retval = 0;
 
 	pr_debug("solution: [kernel_mooc] read in session %zu\n", sess_p->session_no);
-	pr_debug("solution: [kernel_mooc] request %zu\n", size);
-	pr_debug("solution: [kernel_mooc] position %lld\n", *pos);
+	pr_debug("solution: [kernel_mooc] request %zu\n, position %lld\n", size, *pos);
 
 	if (*pos == 0)
 	{
