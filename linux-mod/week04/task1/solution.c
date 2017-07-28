@@ -163,19 +163,16 @@ void string_swap(void *a, void *b, int size)
 
 ssize_t sol_show(struct kobject *kobj, struct kobj_attribute *attr, char *buf)
 {
-	static size_t read_counter = 0;
 	ssize_t retval = 0;
 	pr_debug("solution: call show\n");
+	
+	for (size_t i = 0; i < modules_name.size; ++i)
+	{
+		retval += scnprintf(buf + retval, PAGE_SIZE,
+				"%s\n", modules_name.storage[i]);
 
-	if (read_counter < modules_name.size)
-	{
-		retval = scnprintf(buf, PAGE_SIZE, 
-				"%s\n", modules_name.storage[read_counter++]);
-	}
-	else
-	{
-		retval = 0;
-		read_counter = 0;
+		if (retval >= PAGE_SIZE)
+			break;
 	}
 
 	return retval;
