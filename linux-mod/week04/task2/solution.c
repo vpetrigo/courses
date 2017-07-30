@@ -131,12 +131,17 @@ long solution_ioctl(struct file *filp, unsigned int cmd, unsigned long arg)
 	switch (cmd)
 	{
 		case SUM_LENGTH:
-			sum_len += strlen((char *) arg);
+			sum_len += strlen((const char *) arg);
 			retval = sum_len;
 			break;
 		case SUM_CONTENT:
-			sum_content += (int) arg;
-			retval = sum_content;
+			{
+				int res = 0;
+
+				kstrtoint((const char *) arg, 0, &res);
+				sum_content += res;
+				retval = sum_content;
+			}
 			break;
 		default:
 			retval = -EINVAL;
@@ -187,7 +192,7 @@ static int __init solution_init(void)
 		goto fail;
 	}
 
-	retval = alloc_chrdev_region(&sdev_char.id, 0, 1, node_name);
+	retval = register_chrdev_region(sdev_char.id, 1, DEV_NAME);
 	
 	if (retval != 0) {
 		pr_debug("Cannot get allocate chrdev\n");
