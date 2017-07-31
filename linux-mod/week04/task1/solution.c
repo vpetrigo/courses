@@ -111,7 +111,7 @@ end:
 	return retval;
 }
 
-static int string_container_add(struct string_container *sc, const char **el)
+static int string_container_add(struct string_container *sc, const char *el)
 {
 	int retval = 0;
 
@@ -123,7 +123,7 @@ static int string_container_add(struct string_container *sc, const char **el)
 			goto end;
 	}
 	
-	sc->storage[sc->size++] = *el;
+	sc->storage[sc->size++] = el;
 end:
 	return retval;
 }
@@ -132,10 +132,6 @@ static int string_container_free(struct string_container *sc)
 {
 	if (sc->storage)
 	{
-		for (size_t i = 0; i < sc->size; ++i)
-		{
-			kfree(sc->storage[i]);
-		}
 		kfree(sc->storage);
 		sc->storage = NULL;
 	}
@@ -271,12 +267,7 @@ static int modules_name_list(void)
 	{
 		struct module *mod = list_entry(ptr, struct module, list);
 
-		char *name = kmalloc((strlen(mod->name) + 1) * sizeof(char), GFP_KERNEL);
-		
-		memset(name, 0, strlen(mod->name) + 1);
-		memcpy(name, mod->name, strlen(mod->name));
-
-		if (string_container_add(&modules_name, (const char **) &name) != 0)
+		if (string_container_add(&modules_name, (const char *) mod->name) != 0)
 		{
 			pr_debug("Cannot add element <%s> to container\n", mod->name);
 			retval = -EACCES;
