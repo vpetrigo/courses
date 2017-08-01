@@ -18,6 +18,7 @@
 
 
 MODULE_LICENSE("Dual BSD/GPL");
+MODULE_AUTHOR("Vladimir Petrigo");
 
 #define TOPDIR_NAME "my_kobject"
 #define ARR_SIZE 5
@@ -311,7 +312,7 @@ static int __init solution_init(void)
 	}
 
 	retval = alloc_chrdev_region(&sdev_char.id, 0, 1, node_name);
-	
+
 	if (retval != 0) {
 		pr_debug("Cannot get allocate chrdev\n");
 		goto fail;
