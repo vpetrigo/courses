@@ -1,6 +1,5 @@
 #!/usr/bin/env python3
 # coding=utf-8
-
 """
 Greedy
 
@@ -151,6 +150,7 @@ def main():
     bite_cap, *empty = next(reader)
 
     print(calc_bites(fruits_weight, bite_cap))
+
 
 if __name__ == "__main__":
     main()
