@@ -1,6 +1,5 @@
 #!/usr/bin/env python3
 # coding=utf-8
-
 """
 Given a sequence of lines.
 Output all the lines, which contain "cat" as a word.
