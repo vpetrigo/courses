@@ -22,6 +22,9 @@ __pycache__/
 # Java output
 **/*.class
 
+# DB files
+**/*.db
+
 # Linux kernel build
 **/*.o.cmd
 **/*.symvers
