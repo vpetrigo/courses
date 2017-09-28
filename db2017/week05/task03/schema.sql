@@ -1,6 +1,4 @@
--- Stepik Course.
 -- database sample for task 5.3
- 
 DROP TABLE IF EXISTS Flight;
 DROP TABLE IF EXISTS Planet;
 DROP TABLE IF EXISTS PoliticalSystem;
@@ -21,7 +19,7 @@ CREATE TABLE Planet(
  
 -- Полет на планету в означенную дату
 CREATE TABLE Flight(
-  id SERIAL INT PRIMARY KEY,
+  id SERIAL PRIMARY KEY,
   planet_id INT REFERENCES Planet,
   DATE DATE
   );
