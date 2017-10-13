@@ -1,7 +1,5 @@
 #!/bin/bash
 
-#!/bin/bash
-
 commits_cnt=0
 
 while read repo; do
