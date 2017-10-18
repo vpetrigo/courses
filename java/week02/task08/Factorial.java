@@ -1,6 +1,3 @@
-import java.math.BigInteger;
-import java.util.stream.IntStream;
-
 public class Factorial {
     /**
      * Calculates factorial of given <code>value</code>.
