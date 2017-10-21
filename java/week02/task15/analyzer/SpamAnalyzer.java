@@ -2,8 +2,6 @@ package analyzer;
 
 import java.util.Arrays;
 
-import analyzer.KeywordAnalyzer;
-
 public class SpamAnalyzer extends KeywordAnalyzer implements TextAnalyzer {
     private String[] keywords;
 

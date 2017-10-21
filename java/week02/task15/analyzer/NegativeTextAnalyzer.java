@@ -1,7 +1,5 @@
 package analyzer;
 
-import analyzer.KeywordAnalyzer;
-
 public class NegativeTextAnalyzer extends KeywordAnalyzer implements TextAnalyzer {
     private static String[] negative = {":(", "=(", ":|"};
 
