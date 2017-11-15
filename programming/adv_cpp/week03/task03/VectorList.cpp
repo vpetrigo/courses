@@ -5,12 +5,13 @@
 
 #include <iostream>
 
-template <class T> class VectorList {
-  private:
+template <class T>
+class VectorList {
+   private:
     using VectT = std::vector<T>;
     using ListT = std::list<VectT>;
 
-  public:
+   public:
     using value_type = T;
 
     VectorList() = default;
@@ -23,10 +24,10 @@ template <class T> class VectorList {
     // метод, который будет использоваться для заполнения VectorList
     // гарантирует, что в списке не будет пустых массивов
     // определена снаружи
-    template <class It> void append(It p, It q)
+    template <class It>
+    void append(It p, It q)
     {
-        if (p != q)
-            data_.push_back(VectT(p, q));
+        if (p != q) data_.push_back(VectT(p, q));
     }
 
     bool empty() const { return size() == 0; }
@@ -48,17 +49,23 @@ template <class T> class VectorList {
         using iterator_category = typename std::iterator_traits<
             typename ListT::const_iterator>::iterator_category;
 
-        const_iterator(typename ListT::const_iterator lit,
-                       typename VectT::const_iterator vit)
-            : list_it_{lit}, elem_it_{vit}
+        explicit const_iterator(typename ListT::const_iterator lit)
+            : list_it_{lit}, index_{0}, elem_index_{0}
+        {
+        }
+        const_iterator(typename ListT::const_iterator lit, std::size_t index)
+            : list_it_{lit}, index_{index}, elem_index_{0}
         {
         }
 
         const_iterator &operator++()
         {
-            if (++elem_it_ == list_it_->cend()) {
-                elem_it_ = (++list_it_)->cbegin();
+            if (++elem_index_ == list_it_->size()) {
+                ++list_it_;
+                elem_index_ = 0;
             }
+
+            ++index_;
 
             return *this;
         }
@@ -74,11 +81,12 @@ template <class T> class VectorList {
 
         const_iterator &operator--()
         {
-            if (elem_it_ == list_it_->cbegin()) {
-                elem_it_ = (--list_it_)->cend();
+            if (elem_index_ == 0) {
+                elem_index_ = (--list_it_)->size();
             }
 
-            --elem_it_;
+            --elem_index_;
+            --index_;
 
             return *this;
         }
@@ -92,13 +100,20 @@ template <class T> class VectorList {
             return tmp;
         }
 
-        reference operator*() const { return *elem_it_; }
+        reference operator*() const
+        {
+            auto it = list_it_->cbegin();
 
-        pointer operator->() const { return &(*elem_it_); }
+            std::advance(it, elem_index_);
+
+            return *it;
+        }
+
+        pointer operator->() const { return &(*(*this)); }
 
         bool operator==(const const_iterator &it) const
         {
-            return (elem_it_ == it.elem_it_);
+            return (index_ == it.index_);
         }
 
         bool operator!=(const const_iterator &it) const
@@ -106,20 +121,15 @@ template <class T> class VectorList {
             return !(*this == it);
         }
 
-      private:
+       private:
         typename ListT::const_iterator list_it_;
-        typename VectT::const_iterator elem_it_;
+        std::size_t index_;
+        std::size_t elem_index_;
     };
 
     // определите методы begin / end
-    const_iterator begin() const
-    {
-        return const_iterator{data_.cbegin(), data_.cbegin()->cbegin()};
-    }
-    const_iterator end() const
-    {
-        return const_iterator{data_.cend(), data_.cend()->cbegin()};
-    }
+    const_iterator begin() const { return const_iterator{data_.cbegin()}; }
+    const_iterator end() const { return const_iterator{data_.cend(), size()}; }
 
     // определите const_reverse_iterator
     using const_reverse_iterator = std::reverse_iterator<const_iterator>;
@@ -134,7 +144,7 @@ template <class T> class VectorList {
         return const_reverse_iterator{begin()};
     }
 
-  private:
+   private:
     ListT data_;
 };
 
@@ -157,9 +167,20 @@ int main()
     }
     std::cout << std::endl;
 
+    VectorList<std::string> vs;
+    std::vector<std::string> vs1{"Hello", "World!"};
+
+    vs.append(vs1.cbegin(), vs1.cend());
+    auto it = vs.begin();
+
+    std::cout << it->size() << std::endl;
+    std::cout << (++it)->size() << std::endl;
+
     auto rit = vl.rbegin();
     while (rit != vl.rend()) {
         std::cout << *rit++ << ' ';
     }
     std::cout << std::endl;
+
+    return 0;
 }
