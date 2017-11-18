@@ -9,7 +9,7 @@ public class Spy implements MailService {
     }
 
     @Override
-    Sendable processSendable(Sendable mail) {
+    public Sendable processMail(Sendable mail) {
         if (mail instanceof MailMessage) {
             MailMessage test = (MailMessage) mail;
 
