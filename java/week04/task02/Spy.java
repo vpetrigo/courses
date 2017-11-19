@@ -13,10 +13,9 @@ public class Spy implements MailService {
         if (mail instanceof MailMessage) {
             MailMessage test = (MailMessage) mail;
 
-            if (test.getTo().equals(AUSTIN_POWERS)) {
-                String warn = String.format("Detected target mail correspondence: " + 
-                                            "from %s to %s \"%s\"", test.getFrom(),
-                                            test.getTo(), test.getMessage());
+            if (test.getTo().equals(AUSTIN_POWERS) || test.getFrom().equals(AUSTIN_POWERS)) {
+                String warn = String.format("Detected target mail correspondence: from %s to %s \"%s\"",
+                                            test.getFrom(), test.getTo(), test.getMessage());
                 logger.warning(warn);
             }
             else {
