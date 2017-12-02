@@ -156,40 +156,39 @@ template <typename Dim> struct Quantity {
         return lhs;
     }
 
+    template <typename Dim2>
+    using Product = typename Zip<Dim2, Dim, Plus>::type;
+
+    template <typename Dim2>
+    using Quotient = typename Zip<Dim2, Dim, Minus>::type;
+
+    template <typename Dim2>
+    friend Quantity<Product<Dim2>> operator*(const Quantity &q1,
+                                             const Quantity<Dim2> &q2) noexcept
+    {
+        return Quantity<Product<Dim2>>{q1.value() * q2.value()};
+    }
+
+    friend Quantity<Quotient<Dimension<>>> operator/(double lhs,
+                                                     const Quantity &rhs)
+    {
+        Quantity<Quotient<Dimension<>>> tmp{rhs.value()};
+        tmp /= lhs;
+        return tmp;
+    }
+
+    template <typename Dim2>
+    friend Quantity<Quotient<Dim2>> operator/(const Quantity<Dim2> &q1,
+                                              const Quantity &q2)
+    {
+        return Quantity<Quotient<Dim2>>{q1.value() / q2.value()};
+    }
+
     void print_dim() const noexcept { print_int_list(Dim{}); }
 
   private:
     double value_;
 };
-
-template <typename Dim1, typename Dim2>
-using Product = typename Zip<Dim1, Dim2, Plus>::type;
-
-template <typename Dim1, typename Dim2>
-using Quotient = typename Zip<Dim1, Dim2, Minus>::type;
-
-template <typename Dim1, typename Dim2>
-Quantity<Product<Dim1, Dim2>> operator*(const Quantity<Dim1> &q1,
-                                        const Quantity<Dim2> &q2) noexcept
-{
-    return Quantity<Product<Dim1, Dim2>>{q1.value() * q2.value()};
-}
-
-template <typename Dim>
-Quantity<Quotient<Dimension<>, Dim>> operator/(double lhs,
-                                               const Quantity<Dim> &rhs)
-{
-    Quantity<Quotient<Dimension<>, Dim>> tmp{rhs.value()};
-    tmp /= lhs;
-    return tmp;
-}
-
-template <typename Dim1, typename Dim2>
-Quantity<Quotient<Dim1, Dim2>> operator/(const Quantity<Dim1> &q1,
-                                         const Quantity<Dim2> &q2)
-{
-    return Quantity<Quotient<Dim1, Dim2>>{q1.value() / q2.value()};
-}
 
 using NumberQ = Quantity<Dimension<>>; // число без размерности
 using LengthQ = Quantity<Dimension<1>>;          // метры
