@@ -2,6 +2,7 @@ import java.util.function.Predicate;
 import java.util.Objects;
 import java.util.function.Function;
 
+
 public class Ternary {
     public static void main(String[] args) {
         Predicate<Object> condition = Objects::isNull;
