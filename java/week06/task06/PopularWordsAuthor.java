@@ -26,6 +26,7 @@ public class PopularWordsAuthor {
                 .limit(10)                          // возьмем первые 10
                 .map(Map.Entry::getKey)             // из каждой пары возьмем слово
                 .forEach(System.out::println);      // выведем в консоль
+        scanner.close();
     }
 
     // Создание Comparator'а вынесено в отдельный метод, чтобы не загромождать метод main.
