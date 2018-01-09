@@ -16,7 +16,7 @@ $ gdb task01
 (gdb) r
 # Print current file listing
 (gdb) list
-# Print current instruction
+# Next instruction
 (gdb) n
 # Print registers info
 (gdb) info r
