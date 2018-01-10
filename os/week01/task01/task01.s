@@ -5,3 +5,5 @@ main:
 	movq $1, %rdx
 	movq $2, %rsi
 	xchgq %rsi, %rdx
+.inf1:
+	jmp .inf1
