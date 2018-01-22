@@ -2,14 +2,24 @@
 .section .text
 .global main
 
+.extern printf
+
+hello:
+    .asciz "Pow %d\n"
+
 main:
-    xor %rdi, %rdi
-    xor %rsi, %rsi
-    movq $8, %rdi
-    movq $3, %rsi
+    movq $2, %rdi
+    movq $4, %rsi
     call pow
-.inf1:
-    jmp .inf1
+    pushq %rbp
+    leaq (%rsp), %rbp
+    subq $32, %rsp
+	leaq hello, %rcx
+    movq %rax, %rdx
+	callq printf
+    addq $32, %rsp
+    popq %rbp
+    retq
 
 pow:
     movq $1, %rax
