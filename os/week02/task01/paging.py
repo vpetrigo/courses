@@ -15,8 +15,8 @@ def get_page(logical_addr: int):
     return (pml4, dir_ptr, directory, table, offset)
 
 
-def get_aligned_value(value: int):
-    return ((value >> 12) & 0xffffffffff) << 12
+def get_page_phy_addr(value: int):
+    return (value & ((0xffffffffff) << 12))
 
 
 def get_phy_addr(page: tuple, mem_struct: dict, cr3: int):
@@ -30,7 +30,7 @@ def get_phy_addr(page: tuple, mem_struct: dict, cr3: int):
             print("fault")
             return
 
-        value = get_aligned_value(value)
+        value = get_page_phy_addr(value)
 
     print(value + page[-1])
 
