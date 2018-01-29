@@ -3,6 +3,7 @@
 #include <unordered_map>
 
 using UInt64 = unsigned long long;
+using MemTable = std::unordered_map<UInt64, UInt64>;
 
 template <typename T>
 constexpr short get_mask(T num, unsigned pos, unsigned bit_mask)
@@ -15,9 +16,11 @@ template <typename T> constexpr T get_phy_addr(T reg)
     return (reg & (((1ULL << 40) - 1) << 12));
 }
 
-struct LogicalAddr {
+struct LogicalAddrX86 {
   public:
-    static std::array<short, 5> get_page(UInt64 addr)
+    using RegRepr = std::array<short, 5>;
+
+    static RegRepr get_page(UInt64 addr)
     {
         return std::array<short, 5>{
             get_mask(addr, 39, 9), get_mask(addr, 30, 9), get_mask(addr, 21, 9),
@@ -27,7 +30,7 @@ struct LogicalAddr {
 
 auto get_memory_struct(std::size_t mem_pairs)
 {
-    std::unordered_map<UInt64, UInt64> mem;
+    MemTable mem;
     UInt64 paddr;
     UInt64 value;
 
@@ -39,12 +42,11 @@ auto get_memory_struct(std::size_t mem_pairs)
     return mem;
 }
 
-std::pair<UInt64, bool>
-logical_to_phy_addr(UInt64 laddr, std::size_t cr3,
-                    const std::unordered_map<UInt64, UInt64> &mem)
+std::pair<UInt64, bool> logical_to_phy_addr(UInt64 laddr, std::size_t cr3,
+                                            const MemTable &mem)
 {
     UInt64 value = cr3;
-    auto page = LogicalAddr::get_page(laddr);
+    auto page = LogicalAddrX86::get_page(laddr);
 
     for (std::size_t i = 0; i < page.size() - 1; ++i) {
         auto it = mem.find(page[i] * 8 + value);
@@ -59,8 +61,7 @@ logical_to_phy_addr(UInt64 laddr, std::size_t cr3,
     return std::make_pair(value + page.back(), true);
 }
 
-void process_queries(std::size_t queries, std::size_t cr3,
-                     const std::unordered_map<UInt64, UInt64> &mem)
+void process_queries(std::size_t queries, std::size_t cr3, const MemTable &mem)
 {
     UInt64 addr;
 
