@@ -49,6 +49,10 @@ public:
     void free(void *ptr) noexcept
     {
         BorderMarker *bm = get_bm_by_ptr(ptr); 
+        
+        defrag(bm);
+        
+        BorderMarker *on_head = static_cast<BorderMarker *>(head_);
     }
     
     const BorderMarker &debug_get_borders(void *ptr) const
@@ -86,17 +90,8 @@ private:
 
     void defrag(BorderMarker *bm)
     {
-        if (bm == start_)
-        {
-            log_debug("Start of memory region\n");
-            return;
-        }
-
-        BorderMarker *prev_bm = bm - 1;
-        if (prev_bm->is_free_ == BLOCK_FREE)
-        {
-            prev_bm = reinterpret_cast<BorderMarker *>(get_ptr_to_start_bm(prev_bm, prev_bm->size_));
-        }
+        defrag_prev(bm);
+        defrag_next(bm);
     }
 
     void defrag_prev(BorderMarker *bm)
@@ -105,9 +100,13 @@ private:
 
         if (bm != start_ && prev->is_free_ == BLOCK_FREE)
         {
+            log_debug("%s: Defragment previous\n", __func__);
             prev = reinterpret_cast<BorderMarker *>(get_ptr_to_start_bm(prev, prev->size_));
             prev->size_ = bm->size_ + 2 * sizeof(BorderMarker);
-            BorderMarker *end_bm = reinterpret_cast<BorderMarker *>(get_ptr_to_end_bm(
+
+            BorderMarker *end_bm = reinterpret_cast<BorderMarker *>(get_ptr_to_end_bm(bm, bm->size_));
+
+            *end_bm = *prev;
         }
     }
 
@@ -118,10 +117,16 @@ private:
 
         if (end_bm != get_mem_end() && next->is_free_ == BLOCK_FREE)
         {
+            log_debug("%s: Defragment next\n", __func__);
             if (next->prev_)
             {
                 next->prev_->size_ = next->size_ + 2 * sizeof(BorderMarker);
                 next->prev_->next_ = next->next_;
+                head_ = next->prev_;
+
+                BorderMarker *next_end = reinterpret_cast<BorderMarker *>(get_ptr_to_end_bm(next, next->size_));
+
+                *next_end = *next->prev_;
             }
         }
     }
