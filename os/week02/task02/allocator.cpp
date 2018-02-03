@@ -88,13 +88,13 @@ private:
         return static_cast<char *>(ptr) - sizeof(BorderMarker) - size;
     }
 
-    void defrag(BorderMarker *bm)
+    BorderMarker *defrag(BorderMarker *bm) noexcept
     {
-        defrag_prev(bm);
+        BorderMarker *start = defrag_prev(bm);
         defrag_next(bm);
     }
 
-    void defrag_prev(BorderMarker *bm)
+    BorderMarker *defrag_prev(BorderMarker *bm) noexcept
     {
         BorderMarker *prev = bm - 1;
 
@@ -102,15 +102,18 @@ private:
         {
             log_debug("%s: Defragment previous\n", __func__);
             prev = reinterpret_cast<BorderMarker *>(get_ptr_to_start_bm(prev, prev->size_));
-            prev->size_ = bm->size_ + 2 * sizeof(BorderMarker);
+            prev->size_ += bm->size_ + 2 * sizeof(BorderMarker);
 
             BorderMarker *end_bm = reinterpret_cast<BorderMarker *>(get_ptr_to_end_bm(bm, bm->size_));
 
             *end_bm = *prev;
+            bm = prev;
         }
+
+        return bm;
     }
 
-    void defrag_next(BorderMarker *bm)
+    BorderMarker *defrag_next(BorderMarker *bm) noexcept
     {
         BorderMarker *end_bm = reinterpret_cast<BorderMarker *>(get_ptr_to_end_bm(bm, bm->size_));
         BorderMarker *next = end_bm + 1;
@@ -120,15 +123,17 @@ private:
             log_debug("%s: Defragment next\n", __func__);
             if (next->prev_)
             {
-                next->prev_->size_ = next->size_ + 2 * sizeof(BorderMarker);
+                next->prev_->size_ += next->size_ + 2 * sizeof(BorderMarker);
                 next->prev_->next_ = next->next_;
-                head_ = next->prev_;
 
                 BorderMarker *next_end = reinterpret_cast<BorderMarker *>(get_ptr_to_end_bm(next, next->size_));
 
                 *next_end = *next->prev_;
+                bm = next->prev_;
             }
         }
+
+        return bm;
     }
 
     // data members
