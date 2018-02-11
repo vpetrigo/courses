@@ -57,7 +57,8 @@ TEST_CASE("straightforward allocation", "[allocator]")
         REQUIRE(free_space.size() == 1);
         REQUIRE(free_space.front() ==
                 BUF_SIZE - ALLOC_NUM * Allocator::get_allocation_overhead() -
-                    (ALLOC_NUM * (ALLOC_NUM + 1)) / 2 - Allocator::get_allocation_overhead());
+                    (ALLOC_NUM * (ALLOC_NUM + 1)) / 2 -
+                    Allocator::get_allocation_overhead());
     }
 
     SECTION("allocate zero block")
@@ -65,7 +66,8 @@ TEST_CASE("straightforward allocation", "[allocator]")
         REQUIRE_FALSE(allocator.alloc(0));
         auto free_space = allocator.get_free_places();
         REQUIRE(free_space.size() == 1);
-        REQUIRE(free_space.front() == BUF_SIZE - Allocator::get_allocation_overhead());
+        REQUIRE(free_space.front() ==
+                BUF_SIZE - Allocator::get_allocation_overhead());
     }
 
     delete[] mem;
