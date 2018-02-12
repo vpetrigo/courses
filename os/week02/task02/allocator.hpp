@@ -54,7 +54,7 @@ class Allocator
         if (!check_is_splittable(alloc_place.first, size))
         {
             BorderMarker *new_end =
-                get_bm_by_ptr_with_offset(alloc_place.first, size);
+                get_bm_by_ptr_with_offset(alloc_place.first + 1, size);
 
             if (head_ == alloc_place.first)
             {
@@ -68,10 +68,10 @@ class Allocator
         else
         {
             BorderMarker *new_end =
-                get_bm_by_ptr_with_offset(alloc_place.first, size);
+                get_bm_by_ptr_with_offset(alloc_place.first + 1, size);
             BorderMarker *new_head_free = new_end + 1;
             BorderMarker *new_end_free = get_bm_by_ptr_with_offset(
-                alloc_place.first, alloc_place.first->size_);
+                alloc_place.first + 1, alloc_place.first->size_);
 
             if (head_ == alloc_place.first)
             {
