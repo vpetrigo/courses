@@ -104,14 +104,12 @@ class Allocator
         if (is_left_block_exists(user_block_start) &&
             is_left_block_free(user_block_start))
         {
-            // defrag left
             user_block_start = defrag_left(user_block_start, user_block_end);
         }
 
         if (is_right_block_exists(user_block_end + 1) &&
             is_right_block_free(user_block_end))
         {
-            // defrag right
             if (user_block_end + 1 == head_)
             {
                 head_ = user_block_start;
