@@ -24,11 +24,57 @@ void *alloc_slab(int order)
  * Освобождает участок ранее аллоцированный с помощью
  * функции alloc_slab.
  **/
-void free_slab(void *slab)
+void free_slab(void *slab) { free(slab); }
+
+struct list {
+    struct list *next, *prev;
+};
+
+static inline void list_init(struct list *list)
 {
-    free(slab);
+    list->next = list;
+    list->prev = list;
 }
 
+static inline int list_empty(struct list *list) { return list->next == list; }
+
+static inline void list_insert(struct list *link, struct list *new_link)
+{
+    new_link->prev = link->prev;
+    new_link->next = link;
+    new_link->prev->next = new_link;
+    new_link->next->prev = new_link;
+}
+
+static inline void list_append(struct list *list, struct list *new_link)
+{
+    list_insert((struct list *)list, new_link);
+}
+
+static inline void list_prepend(struct list *list, struct list *new_link)
+{
+    list_insert(list->next, new_link);
+}
+
+static inline void list_remove(struct list *link)
+{
+    link->prev->next = link->next;
+    link->next->prev = link->prev;
+}
+
+#define list_entry(link, type, member)                                         \
+    ((type *)((char *)(link) - (unsigned long)(&((type *)0)->member)))
+
+#define list_head(list, type, member) list_entry((list)->next, type, member)
+
+#define list_tail(list, type, member) list_entry((list)->prev, type, member)
+
+#define list_next(elm, member)                                                 \
+    list_entry((elm)->member.next, typeof(*elm), member)
+
+#define list_for_each_entry(pos, list, member)                                 \
+    for (pos = list_head(list, typeof(*pos), member); &pos->member != (list);  \
+         pos = list_next(pos, member))
 
 /**
  * Эта структура представляет аллокатор, вы можете менять
@@ -42,10 +88,9 @@ struct cache {
     /* список заполненых SLAB-ов */
 
     size_t object_size; /* размер аллоцируемого объекта */
-    int slab_order; /* используемый размер SLAB-а */
-    size_t slab_objects; /* количество объектов в одном SLAB-е */ 
+    int slab_order;     /* используемый размер SLAB-а */
+    size_t slab_objects; /* количество объектов в одном SLAB-е */
 };
-
 
 /**
  * Функция инициализации будет вызвана перед тем, как
@@ -53,13 +98,12 @@ struct cache {
  * Параметры:
  *  - cache - структура, которую вы должны инициализировать
  *  - object_size - размер объектов, которые должен
- *    аллоцировать этот кеширующий аллокатор 
+ *    аллоцировать этот кеширующий аллокатор
  **/
 void cache_setup(struct cache *cache, size_t object_size)
 {
     /* Реализуйте эту функцию. */
 }
-
 
 /**
  * Функция освобождения будет вызвана когда работа с
@@ -68,11 +112,7 @@ void cache_setup(struct cache *cache, size_t object_size)
  * будет считать ошибкой, если не вся память будет
  * освбождена.
  **/
-void cache_release(struct cache *cache)
-{
-    /* Реализуйте эту функцию. */
-}
-
+void cache_release(struct cache *cache) { /* Реализуйте эту функцию. */ }
 
 /**
  * Функция аллокации памяти из кеширующего аллокатора.
@@ -87,7 +127,6 @@ void *cache_alloc(struct cache *cache)
     return nullptr;
 }
 
-
 /**
  * Функция освобождения памяти назад в кеширующий аллокатор.
  * Гарантируется, что ptr - указатель ранее возвращенный из
@@ -98,7 +137,6 @@ void cache_free(struct cache *cache, void *ptr)
     /* Реализуйте эту функцию. */
 }
 
-
 /**
  * Функция должна освободить все SLAB, которые не содержат
  * занятых объектов. Если SLAB не использовался для аллокации
@@ -106,10 +144,7 @@ void cache_free(struct cache *cache, void *ptr)
  * память для внутренних нужд вашего алгоритма), то освбождать
  * его не обязательно.
  **/
-void cache_shrink(struct cache *cache)
-{
-    /* Реализуйте эту функцию. */
-}
+void cache_shrink(struct cache *cache) { /* Реализуйте эту функцию. */ }
 
 int main()
 {
