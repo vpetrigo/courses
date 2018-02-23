@@ -1,5 +1,13 @@
 #include <cstdlib>
 #include <iostream>
+#include <cassert>
+
+constexpr std::size_t ALIGNMENT = 4096;
+
+constexpr std::size_t alloc_size(int order)
+{
+    return ALIGNMENT * (1 << order);
+}
 
 /**
  * Эти две функции вы должны использовать для аллокации
