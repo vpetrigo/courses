@@ -25,18 +25,22 @@ constexpr std::size_t alloc_size(int order)
  **/
 void *alloc_slab(int order)
 {
-    constexpr std::size_t ALIGNMENT = 4096;
-    return _aligned_malloc(ALIGNMENT * (1 << order), ALIGNMENT * (1 << order));
+    return _aligned_malloc(alloc_size(order), alloc_size(order));
 }
 /**
  * Освобождает участок ранее аллоцированный с помощью
  * функции alloc_slab.
  **/
-void free_slab(void *slab) { free(slab); }
+void free_slab(void *slab) { _aligned_free(slab); }
 
 struct list {
     struct list *next, *prev;
 };
+
+#define LIST_HEAD_INIT(name) { &(name), &(name) }
+
+#define LIST_HEAD(name) \
+    struct list name = LIST_HEAD_INIT(name)
 
 static inline void list_init(struct list *list)
 {
