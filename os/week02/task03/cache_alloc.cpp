@@ -88,6 +88,18 @@ static inline void list_remove(struct list *link)
     for (pos = list_head(list, typeof(*pos), member); &pos->member != (list);  \
          pos = list_next(pos, member))
 
+struct mem_block {
+    void *data;
+    bool free;
+    list blocks;
+};
+
+struct slab {
+    std::size_t free_slots;
+    int slab_order;
+    list mem_blocks;
+    list slabs;
+};
 /**
  * Эта структура представляет аллокатор, вы можете менять
  * ее как вам удобно. Приведенные в ней поля и комментарии
