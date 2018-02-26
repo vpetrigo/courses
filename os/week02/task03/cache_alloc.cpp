@@ -107,14 +107,55 @@ struct slab {
  * сохранить в этой структуре.
  **/
 struct cache {
+public:
+    void *allocate(void)
+    {
+        bool has_partial = !list_empty(slabs_partial);
+        bool has_free = !list_empty(slabs_free);
+
+        if (!has_partial)
+        {
+            if (!has_free)
+            {
+                // allocate a new free slab
+            }
+            else
+            {
+                // start using free slab
+            }
+        }
+        else
+        {
+            // use partial
+        }
+    }
+public:
     /* список пустых SLAB-ов для поддержки cache_shrink */
+    list slabs_free;
     /* список частично занятых SLAB-ов */
+    list slabs_partial;
     /* список заполненых SLAB-ов */
+    list slabs_full;
 
     size_t object_size; /* размер аллоцируемого объекта */
     int slab_order;     /* используемый размер SLAB-а */
     size_t slab_objects; /* количество объектов в одном SLAB-е */
 };
+
+int determine_slab_order(std::size_t object_size, std::size_t num_of_elems)
+{
+    constexpr std::size_t MAX_ORDER = 10;
+
+    for (int i = 0; i < MAX_ORDER; ++i)
+    {
+        if (alloc_size(i) - sizeof(slab) >= num_of_elems * object_size)
+        {
+            return i;
+        }
+    }
+
+    return -1;
+}
 
 /**
  * Функция инициализации будет вызвана перед тем, как
