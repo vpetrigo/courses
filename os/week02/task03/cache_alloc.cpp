@@ -168,6 +168,15 @@ int determine_slab_order(std::size_t object_size, std::size_t num_of_elems)
 void cache_setup(struct cache *cache, size_t object_size)
 {
     /* Реализуйте эту функцию. */
+    constexpr std::size_t MAX_SLAB_ELEMS = 64;
+
+    cache->object_size = object_size;
+    list_init(cache->slabs_free);
+    list_init(cache->slabs_partial);
+    list_init(cache->slabs_full);
+    cache->slab_order = determine_slab_order(cache->object_size, MAX_SLAB_ELEMS);
+    assert(cache->slab_order >= 0);
+    cache->slab_objects = MAX_SLAB_ELEMS;
 }
 
 /**
