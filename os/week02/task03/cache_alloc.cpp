@@ -75,17 +75,17 @@ static inline void list_remove(struct list *link)
 }
 
 #define list_entry(link, type, member)                                         \
-    ((type *)((char *)(link) - (unsigned long)(&((type *)0)->member)))
+    ((type *)((char *)(link) - (std::size_t)(&((type *)0)->member)))
 
 #define list_head(list, type, member) list_entry((list)->next, type, member)
 
 #define list_tail(list, type, member) list_entry((list)->prev, type, member)
 
 #define list_next(elm, member)                                                 \
-    list_entry((elm)->member.next, typeof(*elm), member)
+    list_entry((elm)->member.next, __typeof__(*elm), member)
 
 #define list_for_each_entry(pos, list, member)                                 \
-    for (pos = list_head(list, typeof(*pos), member); &pos->member != (list);  \
+    for (pos = list_head(list, __typeof__(*pos), member); &pos->member != (list);  \
          pos = list_next(pos, member))
 
 struct mem_block {
@@ -95,6 +95,12 @@ struct mem_block {
 };
 
 struct slab {
+public:
+    void *get_memory(void)
+    {
+        return nullptr;
+    }
+public:
     std::size_t free_slots;
     int slab_order;
     list mem_blocks;
@@ -110,8 +116,8 @@ struct cache {
 public:
     void *allocate(void)
     {
-        bool has_partial = !list_empty(slabs_partial);
-        bool has_free = !list_empty(slabs_free);
+        bool has_partial = !list_empty(&slabs_partial);
+        bool has_free = !list_empty(&slabs_free);
 
         if (!has_partial)
         {
@@ -122,12 +128,14 @@ public:
             else
             {
                 // start using free slab
+                slab *sl = list_entry(slabs_free.next, slab, slabs);
+                return sl->get_memory();
             }
         }
-        else
-        {
-            // use partial
-        }
+        // use partial
+        slab *sl = list_entry(slabs_partial.next, slab, slabs);
+        //slab* sl = list_entry(&slabs_partial, struct slab, slabs);
+        return sl->get_memory();
     }
 public:
     /* список пустых SLAB-ов для поддержки cache_shrink */
@@ -171,9 +179,9 @@ void cache_setup(struct cache *cache, size_t object_size)
     constexpr std::size_t MAX_SLAB_ELEMS = 64;
 
     cache->object_size = object_size;
-    list_init(cache->slabs_free);
-    list_init(cache->slabs_partial);
-    list_init(cache->slabs_full);
+    list_init(&cache->slabs_free);
+    list_init(&cache->slabs_partial);
+    list_init(&cache->slabs_full);
     cache->slab_order = determine_slab_order(cache->object_size, MAX_SLAB_ELEMS);
     assert(cache->slab_order >= 0);
     cache->slab_objects = MAX_SLAB_ELEMS;
