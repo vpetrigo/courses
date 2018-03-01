@@ -1,8 +1,10 @@
 #include <cstdlib>
 #include <iostream>
 #include <cassert>
+#include <memory>
 
 constexpr std::size_t ALIGNMENT = 4096;
+constexpr std::size_t MAX_SLAB_ELEMS = 64;
 
 constexpr std::size_t alloc_size(int order)
 {
