@@ -62,7 +62,7 @@ static inline void list_insert(struct list *link, struct list *new_link)
 
 static inline void list_append(struct list *list, struct list *new_link)
 {
-    list_insert((struct list *)list, new_link);
+    list_insert(list, new_link);
 }
 
 static inline void list_prepend(struct list *list, struct list *new_link)
