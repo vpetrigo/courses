@@ -91,6 +91,11 @@ static inline void list_remove(struct list *link)
          pos = list_next(pos, member))
 
 struct mem_block {
+    mem_block(void *d, bool free) : data{d}, free{free}
+    {
+        list_init(&blocks);
+    }
+
     void *data;
     bool free;
     list blocks;
