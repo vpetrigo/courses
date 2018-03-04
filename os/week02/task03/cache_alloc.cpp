@@ -103,6 +103,14 @@ struct mem_block {
 
 struct slab {
 public:
+    slab(void *mem, int slab_order, std::size_t object_size) : object_size{object_size}, mem{mem}, slab_order{slab_order}
+    {
+        free_slots = MAX_SLAB_ELEMS;
+        list_init(&mem_blocks);
+        list_init(&slabs);
+        allocate_mem_blocks(mem);
+    }
+
     void *get_memory(void)
     {
         return nullptr;
