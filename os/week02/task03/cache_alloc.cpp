@@ -113,10 +113,77 @@ public:
 
     void *get_memory(void)
     {
-        return nullptr;
+        if (free_slots > 0)
+        {
+            --free_slots;
+            
+            mem_block *ptr = nullptr;
+
+            list_for_each_entry(ptr, &mem_blocks, blocks)
+            {
+                if (ptr->free)
+                {
+                    ptr->free = false;
+                    return ptr->data;
+                }
+            }
+        }
+
+       return nullptr;
+    }
+
+    void free_memory(void *data)
+    {
+        mem_block *ptr = nullptr;
+
+        list_for_each_entry(ptr, &mem_blocks, blocks)
+        {
+            if (ptr->data == data)
+            {
+                ptr->free = true;
+                ++free_slots;
+                break;
+            }
+        }
+    }
+
+    bool is_full() const
+    {
+        return free_slots == 0;
+    }
+
+    std::size_t get_free_slots() const 
+    {
+        return free_slots;
+    }
+
+    void traverse_mem_blocks()
+    {
+        std::size_t i = 1;
+        mem_block *ptr = nullptr;
+        list_for_each_entry(ptr, &mem_blocks, blocks) {
+            std::cout << i++ << std::endl;
+            std::cout << "Is free: " << ptr->free << std::endl;
+            std::cout << "Ptr: " << ptr->data << std::endl;
+        }
+    }
+private:
+    void allocate_mem_blocks(void *slab_mem)
+    {
+        constexpr std::size_t MEMBLOCK_ORDER = 1;
+        void *mem = alloc_slab(MEMBLOCK_ORDER);
+
+        for (std::size_t i = 0; i < MAX_SLAB_ELEMS; ++i)
+        {
+            void *mem_block_ptr = static_cast<char *>(mem) + i * sizeof(mem_block);
+            mem_block *tmp = new(mem_block_ptr) mem_block{static_cast<char *>(slab_mem) + i * object_size, true};
+            list_append(&mem_blocks, &tmp->blocks);
+        }
     }
 public:
     std::size_t free_slots;
+    std::size_t object_size;
+    void *mem;
     int slab_order;
     list mem_blocks;
     list slabs;
