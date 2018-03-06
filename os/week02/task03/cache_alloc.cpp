@@ -196,27 +196,34 @@ public:
  **/
 struct cache {
 public:
-    void *allocate(void)
+    void *allocate()
     {
         bool has_partial = !list_empty(&slabs_partial);
         bool has_free = !list_empty(&slabs_free);
+        slab *sl = nullptr;
 
         if (!has_partial)
         {
             if (!has_free)
             {
                 // allocate a new free slab
+                void *new_mem = alloc_slab(slab_order);
+                slab *s = new (static_cast<char *> (new_mem) + alloc_size(slab_order) - sizeof(slab)) slab{new_mem, slab_order, object_size};
+                list_append(&s->slabs, &slabs_partial);
+                sl = s;
             }
             else
             {
                 // start using free slab
-                slab *sl = list_entry(slabs_free.next, slab, slabs);
-                return sl->get_memory();
+                sl = list_entry(slabs_free.next, slab, slabs);
             }
         }
-        // use partial
-        slab *sl = list_entry(slabs_partial.next, slab, slabs);
-        //slab* sl = list_entry(&slabs_partial, struct slab, slabs);
+        else
+        {
+            // use partial
+            sl = list_entry(slabs_partial.next, slab, slabs);
+        }
+
         return sl->get_memory();
     }
 public:
@@ -258,8 +265,6 @@ int determine_slab_order(std::size_t object_size, std::size_t num_of_elems)
 void cache_setup(struct cache *cache, size_t object_size)
 {
     /* Реализуйте эту функцию. */
-    constexpr std::size_t MAX_SLAB_ELEMS = 64;
-
     cache->object_size = object_size;
     list_init(&cache->slabs_free);
     list_init(&cache->slabs_partial);
