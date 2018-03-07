@@ -317,14 +317,23 @@ void cache_shrink(struct cache *cache) { /* Реализуйте эту функ
 
 int main()
 {
-    void *ptr = alloc_slab(10);
-    void *ptr1 = alloc_slab(1);
-
+    void *ptr = alloc_slab(4);
     std::cout << ptr << std::endl;
-    std::cout << ptr1 << std::endl;
+    slab s{ptr, 4, 32};
 
+    void *data1 = s.get_memory();
+    void *data2 = s.get_memory();
+
+    std::cout << ptr << ' ' << data1 << ' ' << data2 << std::endl;
+    s.traverse_mem_blocks();
+    std::cout << s.get_free_slots() << std::endl;
+    s.free_memory(data2);
+    s.traverse_mem_blocks();
+    std::cout << s.get_free_slots() << std::endl;
+    s.free_memory(data1);
+    s.traverse_mem_blocks();
     free_slab(ptr);
-    free_slab(ptr1);
+    std::cout << "End execution" << std::endl;
 
     return 0;
 }
