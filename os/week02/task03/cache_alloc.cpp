@@ -1,15 +1,12 @@
+#include <cassert>
 #include <cstdlib>
 #include <iostream>
-#include <cassert>
 #include <memory>
 
 constexpr std::size_t ALIGNMENT = 4096;
 constexpr std::size_t MAX_SLAB_ELEMS = 64;
 
-constexpr std::size_t alloc_size(int order)
-{
-    return ALIGNMENT * (1 << order);
-}
+constexpr std::size_t alloc_size(int order) { return ALIGNMENT * (1 << order); }
 
 /**
  * Эти две функции вы должны использовать для аллокации
@@ -39,10 +36,12 @@ struct list {
     struct list *next, *prev;
 };
 
-#define LIST_HEAD_INIT(name) { &(name), &(name) }
+#define LIST_HEAD_INIT(name)                                                   \
+    {                                                                          \
+        &(name), &(name)                                                       \
+    }
 
-#define LIST_HEAD(name) \
-    struct list name = LIST_HEAD_INIT(name)
+#define LIST_HEAD(name) struct list name = LIST_HEAD_INIT(name)
 
 static inline void list_init(struct list *list)
 {
@@ -87,14 +86,11 @@ static inline void list_remove(struct list *link)
     list_entry((elm)->member.next, __typeof__(*elm), member)
 
 #define list_for_each_entry(pos, list, member)                                 \
-    for (pos = list_head(list, __typeof__(*pos), member); &pos->member != (list);  \
-         pos = list_next(pos, member))
+    for (pos = list_head(list, __typeof__(*pos), member);                      \
+         &pos->member != (list); pos = list_next(pos, member))
 
 struct mem_block {
-    mem_block(void *d, bool free) : data{d}, free{free}
-    {
-        list_init(&blocks);
-    }
+    mem_block(void *d, bool free) : data{d}, free{free} { list_init(&blocks); }
 
     void *data;
     bool free;
@@ -102,8 +98,9 @@ struct mem_block {
 };
 
 struct slab {
-public:
-    slab(void *mem, int slab_order, std::size_t object_size) : object_size{object_size}, mem{mem}, slab_order{slab_order}
+  public:
+    slab(void *mem, int slab_order, std::size_t object_size)
+        : object_size{object_size}, mem{mem}, slab_order{slab_order}
     {
         free_slots = MAX_SLAB_ELEMS;
         list_init(&mem_blocks);
@@ -113,23 +110,21 @@ public:
 
     void *get_memory(void)
     {
-        if (free_slots > 0)
-        {
+        if (free_slots > 0) {
             --free_slots;
-            
+
             mem_block *ptr = nullptr;
 
             list_for_each_entry(ptr, &mem_blocks, blocks)
             {
-                if (ptr->free)
-                {
+                if (ptr->free) {
                     ptr->free = false;
                     return ptr->data;
                 }
             }
         }
 
-       return nullptr;
+        return nullptr;
     }
 
     void free_memory(void *data)
@@ -138,8 +133,7 @@ public:
 
         list_for_each_entry(ptr, &mem_blocks, blocks)
         {
-            if (ptr->data == data)
-            {
+            if (ptr->data == data) {
                 ptr->free = true;
                 ++free_slots;
                 break;
@@ -147,40 +141,38 @@ public:
         }
     }
 
-    bool is_full() const
-    {
-        return free_slots == 0;
-    }
+    bool is_full() const { return free_slots == 0; }
 
-    std::size_t get_free_slots() const 
-    {
-        return free_slots;
-    }
+    std::size_t get_free_slots() const { return free_slots; }
 
     void traverse_mem_blocks()
     {
         std::size_t i = 1;
         mem_block *ptr = nullptr;
-        list_for_each_entry(ptr, &mem_blocks, blocks) {
+        list_for_each_entry(ptr, &mem_blocks, blocks)
+        {
             std::cout << i++ << std::endl;
             std::cout << "Is free: " << ptr->free << std::endl;
             std::cout << "Ptr: " << ptr->data << std::endl;
         }
     }
-private:
+
+  private:
     void allocate_mem_blocks(void *slab_mem)
     {
         constexpr std::size_t MEMBLOCK_ORDER = 1;
         void *mem = alloc_slab(MEMBLOCK_ORDER);
 
-        for (std::size_t i = 0; i < MAX_SLAB_ELEMS; ++i)
-        {
-            void *mem_block_ptr = static_cast<char *>(mem) + i * sizeof(mem_block);
-            mem_block *tmp = new(mem_block_ptr) mem_block{static_cast<char *>(slab_mem) + i * object_size, true};
+        for (std::size_t i = 0; i < MAX_SLAB_ELEMS; ++i) {
+            void *mem_block_ptr =
+                static_cast<char *>(mem) + i * sizeof(mem_block);
+            mem_block *tmp = new (mem_block_ptr) mem_block{
+                static_cast<char *>(slab_mem) + i * object_size, true};
             list_append(&mem_blocks, &tmp->blocks);
         }
     }
-public:
+
+  public:
     std::size_t free_slots;
     std::size_t object_size;
     void *mem;
@@ -195,38 +187,37 @@ public:
  * сохранить в этой структуре.
  **/
 struct cache {
-public:
+  public:
     void *allocate()
     {
         bool has_partial = !list_empty(&slabs_partial);
         bool has_free = !list_empty(&slabs_free);
         slab *sl = nullptr;
 
-        if (!has_partial)
-        {
-            if (!has_free)
-            {
+        if (!has_partial) {
+            if (!has_free) {
                 // allocate a new free slab
                 void *new_mem = alloc_slab(slab_order);
-                slab *s = new (static_cast<char *> (new_mem) + alloc_size(slab_order) - sizeof(slab)) slab{new_mem, slab_order, object_size};
+                slab *s =
+                    new (static_cast<char *>(new_mem) + alloc_size(slab_order) -
+                         sizeof(slab)) slab{new_mem, slab_order, object_size};
                 list_append(&s->slabs, &slabs_partial);
                 sl = s;
             }
-            else
-            {
+            else {
                 // start using free slab
                 sl = list_entry(slabs_free.next, slab, slabs);
             }
         }
-        else
-        {
+        else {
             // use partial
             sl = list_entry(slabs_partial.next, slab, slabs);
         }
 
         return sl->get_memory();
     }
-public:
+
+  public:
     /* список пустых SLAB-ов для поддержки cache_shrink */
     list slabs_free;
     /* список частично занятых SLAB-ов */
@@ -243,10 +234,8 @@ int determine_slab_order(std::size_t object_size, std::size_t num_of_elems)
 {
     constexpr std::size_t MAX_ORDER = 10;
 
-    for (int i = 0; i < MAX_ORDER; ++i)
-    {
-        if (alloc_size(i) - sizeof(slab) >= num_of_elems * object_size)
-        {
+    for (int i = 0; i < MAX_ORDER; ++i) {
+        if (alloc_size(i) - sizeof(slab) >= num_of_elems * object_size) {
             return i;
         }
     }
@@ -269,7 +258,8 @@ void cache_setup(struct cache *cache, size_t object_size)
     list_init(&cache->slabs_free);
     list_init(&cache->slabs_partial);
     list_init(&cache->slabs_full);
-    cache->slab_order = determine_slab_order(cache->object_size, MAX_SLAB_ELEMS);
+    cache->slab_order =
+        determine_slab_order(cache->object_size, MAX_SLAB_ELEMS);
     assert(cache->slab_order >= 0);
     cache->slab_objects = MAX_SLAB_ELEMS;
 }
@@ -281,7 +271,7 @@ void cache_setup(struct cache *cache, size_t object_size)
  * будет считать ошибкой, если не вся память будет
  * освбождена.
  **/
-void cache_release(struct cache *cache) { /* Реализуйте эту функцию. */ }
+void cache_release(struct cache *cache) { /* Реализуйте эту функцию. */}
 
 /**
  * Функция аллокации памяти из кеширующего аллокатора.
@@ -313,7 +303,7 @@ void cache_free(struct cache *cache, void *ptr)
  * память для внутренних нужд вашего алгоритма), то освбождать
  * его не обязательно.
  **/
-void cache_shrink(struct cache *cache) { /* Реализуйте эту функцию. */ }
+void cache_shrink(struct cache *cache) { /* Реализуйте эту функцию. */}
 
 int main()
 {
