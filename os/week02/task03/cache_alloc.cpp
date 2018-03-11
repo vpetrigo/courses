@@ -216,7 +216,15 @@ struct cache {
             sl = list_entry(slabs_partial.next, slab, slabs);
         }
 
-        return sl->get_memory();
+        void *mem = sl->get_memory();
+
+        if (sl->is_full())
+        {
+            list_remove(&sl->slabs);
+            list_append(&slabs_full, &sl->slabs);
+        }
+
+        return mem;
     }
 
   public:
