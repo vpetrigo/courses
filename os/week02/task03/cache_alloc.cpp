@@ -2,9 +2,10 @@
 #include <cstdlib>
 #include <iostream>
 #include <memory>
+#include <vector>
 
 constexpr std::size_t ALIGNMENT = 4096;
-constexpr std::size_t MAX_SLAB_ELEMS = 64;
+constexpr std::size_t MAX_SLAB_ELEMS = 32;
 
 constexpr std::size_t alloc_size(int order) { return ALIGNMENT * (1 << order); }
 
