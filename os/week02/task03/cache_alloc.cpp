@@ -25,13 +25,23 @@ constexpr std::size_t alloc_size(int order) { return ALIGNMENT * (1 << order); }
  **/
 void *alloc_slab(int order)
 {
+#ifdef _WIN32
     return _aligned_malloc(alloc_size(order), alloc_size(order));
+#elif __linux__
+    return aligned_alloc(alloc_size(order), alloc_size(order));
+#endif
 }
 /**
  * Освобождает участок ранее аллоцированный с помощью
  * функции alloc_slab.
  **/
-void free_slab(void *slab) { _aligned_free(slab); }
+void free_slab(void *slab) {
+#ifdef _WIN32
+    _aligned_free(slab);
+#elif __linux__
+    free(slab);
+#endif
+}
 
 struct list {
     struct list *next, *prev;
