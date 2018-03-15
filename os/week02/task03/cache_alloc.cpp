@@ -87,7 +87,9 @@ static inline void list_remove(struct list *link)
 }
 
 #define list_entry(link, type, member)                                         \
-    (reinterpret_cast<type *>((reinterpret_cast<char *>(link) - reinterpret_cast<char *>(&(static_cast<type *>(nullptr))->member))))
+    (reinterpret_cast<type *>(                                                 \
+        (reinterpret_cast<char *>(link) -                                      \
+         reinterpret_cast<char *>(&(static_cast<type *>(nullptr))->member))))
 
 #define list_head(list, type, member) list_entry((list)->next, type, member)
 
