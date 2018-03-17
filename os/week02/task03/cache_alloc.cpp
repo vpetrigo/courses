@@ -162,6 +162,8 @@ struct slab {
 
     bool is_full() const { return free_slots == 0; }
 
+    bool is_empty() const { return free_slots == MAX_SLAB_ELEMS; }
+
     std::size_t get_free_slots() const { return free_slots; }
 
     void traverse_mem_blocks()
