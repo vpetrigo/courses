@@ -181,7 +181,7 @@ struct slab {
   private:
     void allocate_mem_blocks(void *slab_mem)
     {
-        constexpr std::size_t MEMBLOCK_ORDER = 1;
+        constexpr std::size_t MEMBLOCK_ORDER = 0;
         void *mem = alloc_slab(MEMBLOCK_ORDER);
 
         for (std::size_t i = 0; i < MAX_SLAB_ELEMS; ++i) {
