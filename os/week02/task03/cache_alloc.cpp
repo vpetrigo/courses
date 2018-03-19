@@ -227,7 +227,7 @@ struct cache {
             }
             else {
                 // start using free slab
-                sl = list_entry(slabs_free.next, slab, slabs);
+                sl = list_head(&slabs_free, slab, slabs);
                 list_remove(&sl->slabs);
                 list_append(&slabs_partial, &sl->slabs);
             }
