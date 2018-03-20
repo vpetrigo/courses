@@ -239,8 +239,7 @@ struct cache {
 
         void *mem = sl->get_memory();
 
-        if (sl->is_full())
-        {
+        if (sl->is_full()) {
             list_remove(&sl->slabs);
             list_append(&slabs_full, &sl->slabs);
         }
