@@ -247,6 +247,75 @@ struct cache {
         return mem;
     }
 
+    void free(void *ptr)
+    {
+        slab *slab_to_free = get_slab(ptr);
+
+        slab_to_free->free_memory(ptr);
+        slab *it = nullptr;
+        if (!list_empty(&slabs_full))
+        {
+            list_for_each_entry(it, &slabs_full, slabs)
+            {
+                if (it == slab_to_free) {
+                    // remove SLAB from fully occupied SLAB list
+                    list_remove(&slab_to_free->slabs);
+                    // append this SLAB to partial free SLAB list
+                    list_append(&slabs_partial, &slab_to_free->slabs);
+                    return;
+                }
+            }
+        }
+
+        if (slab_to_free->is_empty() && !list_empty(&slabs_partial)) {
+            it = nullptr;
+            list_for_each_entry(it, &slabs_partial, slabs)
+            {
+                if (it == slab_to_free) {
+                    list_remove(&slab_to_free->slabs);
+                    list_append(&slabs_free, &slab_to_free->slabs);
+                    return;
+                }
+            }
+        }
+    }
+
+    void shrink()
+    {
+        release_slabs_list(&slabs_free);
+    }
+
+    void release()
+    {
+        release_slabs_list(&slabs_free);
+        release_slabs_list(&slabs_full);
+        release_slabs_list(&slabs_partial);
+    }
+  private:
+    slab *get_slab(void *ptr) const
+    {
+        return reinterpret_cast<slab *>(
+            reinterpret_cast<char *>(reinterpret_cast<std::size_t>(ptr) &
+                                     ~(alloc_size(slab_order) - 1)) +
+            alloc_size(slab_order) - sizeof(slab));
+    }
+
+    void release_slabs_list(list *list)
+    {
+        if (!list_empty(list))
+        {
+            slab *it = list_head(list, slab, slabs);
+
+            while (&it->slabs != list)
+            {
+                slab *tmp = list_next(it, slabs);
+                list_remove(&it->slabs);
+                it->release();
+                free_slab(it->mem);
+                it = tmp;
+            }
+        }
+    }
   public:
     /* список пустых SLAB-ов для поддержки cache_shrink */
     list slabs_free;
