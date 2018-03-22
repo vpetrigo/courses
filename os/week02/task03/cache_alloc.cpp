@@ -333,7 +333,7 @@ int determine_slab_order(std::size_t object_size, std::size_t num_of_elems)
 {
     constexpr std::size_t MAX_ORDER = 10;
 
-    for (int i = 0; i < MAX_ORDER; ++i) {
+    for (int i = 0; i < MAX_ORDER + 1; ++i) {
         if (alloc_size(i) - sizeof(slab) >= num_of_elems * object_size) {
             return i;
         }
