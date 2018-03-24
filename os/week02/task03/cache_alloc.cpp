@@ -385,7 +385,7 @@ void cache_release(struct cache *cache) {
 void *cache_alloc(struct cache *cache)
 {
     /* Реализуйте эту функцию. */
-    return nullptr;
+    return cache->allocate();
 }
 
 /**
