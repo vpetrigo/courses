@@ -396,6 +396,7 @@ void *cache_alloc(struct cache *cache)
 void cache_free(struct cache *cache, void *ptr)
 {
     /* Реализуйте эту функцию. */
+    cache->free(ptr);
 }
 
 /**
