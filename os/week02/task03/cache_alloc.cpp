@@ -35,7 +35,8 @@ void *alloc_slab(int order)
  * Освобождает участок ранее аллоцированный с помощью
  * функции alloc_slab.
  **/
-void free_slab(void *slab) {
+void free_slab(void *slab)
+{
 #ifdef _WIN32
     _aligned_free(slab);
 #elif __linux__
