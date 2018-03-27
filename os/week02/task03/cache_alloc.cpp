@@ -158,7 +158,9 @@ struct slab {
     void release()
     {
         void *mem_block_start = list_head(&mem_blocks, mem_block, blocks);
-        free_slab(reinterpret_cast<void *>(reinterpret_cast<std::size_t>(mem_block_start) & ~(alloc_size(0) - 1)));
+        free_slab(reinterpret_cast<void *>(
+            reinterpret_cast<std::size_t>(mem_block_start) &
+            ~(alloc_size(0) - 1)));
     }
 
     bool is_full() const { return free_slots == 0; }
