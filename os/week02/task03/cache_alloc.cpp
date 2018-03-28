@@ -256,8 +256,7 @@ struct cache {
 
         slab_to_free->free_memory(ptr);
         slab *it = nullptr;
-        if (!list_empty(&slabs_full))
-        {
+        if (!list_empty(&slabs_full)) {
             list_for_each_entry(it, &slabs_full, slabs)
             {
                 if (it == slab_to_free) {
