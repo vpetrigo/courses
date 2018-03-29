@@ -282,10 +282,7 @@ struct cache {
         }
     }
 
-    void shrink()
-    {
-        release_slabs_list(&slabs_free);
-    }
+    void shrink() { release_slabs_list(&slabs_free); }
 
     void release()
     {
@@ -293,6 +290,7 @@ struct cache {
         release_slabs_list(&slabs_full);
         release_slabs_list(&slabs_partial);
     }
+
   private:
     slab *get_slab(void *ptr) const
     {
