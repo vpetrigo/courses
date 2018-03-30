@@ -302,12 +302,10 @@ struct cache {
 
     void release_slabs_list(list *list)
     {
-        if (!list_empty(list))
-        {
+        if (!list_empty(list)) {
             slab *it = list_head(list, slab, slabs);
 
-            while (&it->slabs != list)
-            {
+            while (&it->slabs != list) {
                 slab *tmp = list_next(it, slabs);
                 list_remove(&it->slabs);
                 it->release();
@@ -316,6 +314,7 @@ struct cache {
             }
         }
     }
+
   public:
     /* список пустых SLAB-ов для поддержки cache_shrink */
     list slabs_free;
