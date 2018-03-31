@@ -369,7 +369,8 @@ void cache_setup(struct cache *cache, size_t object_size)
  * будет считать ошибкой, если не вся память будет
  * освбождена.
  **/
-void cache_release(struct cache *cache) {
+void cache_release(struct cache *cache)
+{
     /* Реализуйте эту функцию. */
     cache->release();
 }
