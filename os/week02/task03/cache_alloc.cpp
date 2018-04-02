@@ -406,7 +406,11 @@ void cache_free(struct cache *cache, void *ptr)
  * память для внутренних нужд вашего алгоритма), то освбождать
  * его не обязательно.
  **/
-void cache_shrink(struct cache *cache) { /* Реализуйте эту функцию. */}
+void cache_shrink(struct cache *cache)
+{
+    /* Реализуйте эту функцию. */
+    cache->shrink();
+}
 
 int main()
 {
