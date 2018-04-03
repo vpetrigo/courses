@@ -412,23 +412,21 @@ void cache_shrink(struct cache *cache)
     cache->shrink();
 }
 
-int main()
+void test1()
 {
     void *ptr = alloc_slab(4);
-    std::cout << ptr << std::endl;
     slab s{ptr, 4, 32};
-
     void *data1 = s.get_memory();
     void *data2 = s.get_memory();
 
-    std::cout << ptr << ' ' << data1 << ' ' << data2 << std::endl;
-    s.traverse_mem_blocks();
-    std::cout << s.get_free_slots() << std::endl;
+    assert(data1 != nullptr);
+    assert(data2 != nullptr);
+    assert(s.get_free_slots() == (MAX_SLAB_ELEMS - 2));
     s.free_memory(data2);
-    s.traverse_mem_blocks();
-    std::cout << s.get_free_slots() << std::endl;
+    assert(s.get_free_slots() == (MAX_SLAB_ELEMS - 1));
     s.free_memory(data1);
-    s.traverse_mem_blocks();
+    assert(s.get_free_slots() == (MAX_SLAB_ELEMS));
+    s.release();
     free_slab(ptr);
     std::cout << "End execution" << std::endl;
 
