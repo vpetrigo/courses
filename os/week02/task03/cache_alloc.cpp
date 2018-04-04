@@ -428,7 +428,45 @@ void test1()
     assert(s.get_free_slots() == (MAX_SLAB_ELEMS));
     s.release();
     free_slab(ptr);
-    std::cout << "End execution" << std::endl;
+    std::cout << __func__ << ": passed" << std::endl;
+}
+
+void test2()
+{
+    cache mem_cache;
+
+    cache_setup(&mem_cache, 32);
+    void *data1 = cache_alloc(&mem_cache);
+    assert(data1 != nullptr);
+    void *data2 = cache_alloc(&mem_cache);
+    assert(data2 != nullptr);
+    cache_free(&mem_cache, data1);
+    cache_free(&mem_cache, data2);
+    cache_shrink(&mem_cache);
+    cache_release(&mem_cache);
+    std::cout << __func__ << ": passed" << std::endl;
+}
+
+void test3()
+{
+    cache mem_cache;
+
+    cache_setup(&mem_cache, 256);
+    std::vector<void *> ptr_list;
+
+    for (std::size_t i = 0; i < MAX_SLAB_ELEMS * 3; ++i) {
+        void *tmp = cache_alloc(&mem_cache);
+        assert(tmp != nullptr);
+        ptr_list.emplace_back(tmp);
+    }
+
+    for (std::size_t i = 0; i < MAX_SLAB_ELEMS; ++i) {
+        void *tmp = ptr_list.back();
+
+        assert(tmp != nullptr);
+        ptr_list.pop_back();
+        cache_free(&mem_cache, tmp);
+    }
 
     return 0;
 }
