@@ -468,5 +468,50 @@ void test3()
         cache_free(&mem_cache, tmp);
     }
 
+    cache_shrink(&mem_cache);
+    cache_release(&mem_cache);
+    std::cout << __func__ << ": passed" << std::endl;
+}
+
+void test4()
+{
+    cache mem_cache;
+    std::vector<void *> ptr_list;
+    constexpr std::size_t ALLOC_MEM_SIZE = MAX_SLAB_ELEMS * 8192;
+
+    cache_setup(&mem_cache, 130000);
+
+    for (std::size_t i = 0; i < ALLOC_MEM_SIZE; ++i) {
+        void *tmp = cache_alloc(&mem_cache);
+        assert(tmp != nullptr);
+        ptr_list.emplace_back(tmp);
+    }
+
+    for (std::size_t i = MAX_SLAB_ELEMS * 32; i < MAX_SLAB_ELEMS * 128; ++i) {
+        cache_free(&mem_cache, ptr_list[i]);
+    }
+
+    cache_shrink(&mem_cache);
+    cache_release(&mem_cache);
+    ptr_list.clear();
+    cache_setup(&mem_cache, 128);
+
+    for (std::size_t i = 0; i < MAX_SLAB_ELEMS * 64; ++i) {
+        void *tmp = cache_alloc(&mem_cache);
+        assert(tmp != nullptr);
+        ptr_list.emplace_back(tmp);
+    }
+
+    cache_release(&mem_cache);
+    ptr_list.clear();
+    std::cout << __func__ << ": passed" << std::endl;
+}
+
+int main()
+{
+    test1();
+    test2();
+    test3();
+    test4();
     return 0;
 }
