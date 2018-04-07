@@ -1,13 +1,29 @@
 #include <cassert>
 #include <cstdlib>
 #include <iostream>
+#include <iterator>
 #include <memory>
 #include <vector>
+#include <algorithm>
 
-constexpr std::size_t ALIGNMENT = 4096;
-constexpr std::size_t MAX_SLAB_ELEMS = 32;
+constexpr std::size_t ALIGNMENT = 4096; /**< Memory allocation minimal alignment */
+constexpr std::size_t MAX_SLAB_ELEMS = 32; /**< Maximum number of elements in a slab */
 
+/**
+ * \brief Get allocation size
+ * \param[in] order Number of bytes in SLAB with given order (#ALIGNMENT * 2 ^ order) allocated memory
+ */
 constexpr std::size_t alloc_size(int order) { return ALIGNMENT * (1 << order); }
+
+/**
+ * \brief Return pointer to SLAB's memory start
+ * \param[in] ptr Pointer that belongs to a SLAB
+ * \param[in] order Memory order of a given SLAB
+ */
+void *get_slab_start(void *ptr, int order)
+{
+    return reinterpret_cast<void *>(reinterpret_cast<std::size_t>(ptr) & ~(alloc_size(order) - 1));
+}
 
 /**
  * Эти две функции вы должны использовать для аллокации
