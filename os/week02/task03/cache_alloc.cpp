@@ -127,6 +127,131 @@ struct mem_block {
     list blocks;
 };
 
+unsigned long get_free_slots_mask(int max_elems)
+{
+    return (1ULL << max_elems) - 1;
+}
+
+struct Slab {
+    virtual void *get_memory() = 0;
+    virtual void free_memory(void *ptr) = 0;
+    virtual bool is_empty() const = 0;
+    virtual bool is_full() const = 0;
+    virtual int get_free_slots() const = 0;
+    virtual void release() = 0;
+    virtual void set_list(const list *list) = 0;
+    virtual const list *get_list() const = 0;
+};
+
+struct array_slab {
+  public:
+    array_slab(void *mem, int slab_order, std::size_t object_size, std::size_t slab_elems = MAX_SLAB_ELEMS)
+        : slab_order{slab_order}, object_size{object_size}, slab_elems{slab_elems}
+    {
+        free_slots = get_free_slots_mask(slab_elems);
+        list_init(&slabs);
+        allocate_mem_blocks(mem);
+    }
+
+    void *get_memory()
+    {
+        if (free_slots != 0) {
+            int slot = get_first_free_slot(free_slots);
+
+            assert(slot >= 0);
+            return allocate_slot(slot);
+        }
+
+        return nullptr;
+    }
+
+    void free_memory(void *ptr)
+    {
+        std::size_t mem_pos =
+            std::distance(static_cast<char *>(get_slab_start(ptr, slab_order)),
+                          static_cast<char *>(ptr)) / object_size;
+        free_slot(mem_pos);
+    }
+
+    bool is_empty() const { return free_slots == get_free_slots_mask(slab_elems); }
+
+    bool is_full() const { return free_slots == 0; }
+
+    void print_mask(void)
+    {
+        for (std::size_t i = slab_elems - 1; i < slab_elems; --i) {
+            std::cout << (free_slots & (1UL << i));
+        }
+
+        std::cout << std::endl;
+    }
+
+    int get_free_slots(void)
+    {
+        int counter = 0;
+
+        for (std::size_t i = slab_elems - 1; i < slab_elems; --i) {
+            if ((free_slots & (1UL << i)) != 0) {
+                ++counter;
+            }
+        }
+
+        return counter;
+    }
+
+    void release() {
+        free_slots = 0;
+        free_slab(*mem_array_ptr);
+    }
+
+    void set_list(const list *list) {
+        cache_list = list;
+    }
+
+    const list *get_list(void) const {
+        return cache_list;
+    }
+  private:
+    int get_first_free_slot(unsigned long mask)
+    {
+        //return MAX_SLAB_ELEMS - __builtin_clz(free_slots) - 1;
+        for (int i = slab_elems - 1; i < slab_elems; --i) {
+            if (free_slots & (1UL << i)) {
+                return i;
+            }
+        }
+
+        return -1;
+    }
+
+    void *allocate_slot(int slot)
+    {
+        free_slots &= ~(1UL << slot);
+        return mem_array_ptr[slab_elems - slot - 1];
+    }
+
+    void free_slot(int slot)
+    {
+        free_slots |= (1UL << (slab_elems - slot - 1));
+    }
+
+    void allocate_mem_blocks(void *mem)
+    {
+        for (std::size_t i = 0; i < slab_elems; ++i) {
+            mem_array_ptr[i] = static_cast<char *>(mem) + i * object_size;
+        }
+    }
+
+  public:
+    int slab_order;
+    std::size_t object_size;
+    std::size_t slab_elems;
+    unsigned long free_slots;
+    void *mem_array_ptr[MAX_SLAB_ELEMS];
+    const list *cache_list;
+    list slabs;
+};
+
 struct slab {
   public:
     slab(void *mem, int slab_order, std::size_t object_size)
