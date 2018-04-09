@@ -355,7 +355,7 @@ struct cache {
     {
         bool has_partial = !list_empty(&slabs_partial);
         bool has_free = !list_empty(&slabs_free);
-        slab *sl = nullptr;
+        array_slab *sl = nullptr;
 
         if (!has_partial) {
             if (!has_free) {
