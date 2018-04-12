@@ -366,6 +366,7 @@ struct cache {
                          sizeof(array_slab)) array_slab{new_mem, slab_order, object_size, slab_max_elems};
                 list_append(&slabs_partial, &new_slab->slabs);
                 sl = new_slab;
+                sl->set_list(&slabs_partial);
             }
             else {
                 // start using free slab
