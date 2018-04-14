@@ -373,6 +373,7 @@ struct cache {
                 sl = list_head(&slabs_free, array_slab, slabs);
                 list_remove(&sl->slabs);
                 list_append(&slabs_partial, &sl->slabs);
+                sl->set_list(&slabs_partial);
             }
         }
         else {
