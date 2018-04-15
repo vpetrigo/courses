@@ -378,7 +378,7 @@ struct cache {
         }
         else {
             // use partial
-            sl = list_entry(slabs_partial.next, slab, slabs);
+            sl = list_head(&slabs_partial, array_slab, slabs);
         }
 
         void *mem = sl->get_memory();
