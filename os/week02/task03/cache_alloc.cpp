@@ -386,6 +386,7 @@ struct cache {
         if (sl->is_full()) {
             list_remove(&sl->slabs);
             list_append(&slabs_full, &sl->slabs);
+            sl->set_list(&slabs_full);
         }
 
         return mem;
