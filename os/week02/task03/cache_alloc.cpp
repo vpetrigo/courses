@@ -394,7 +394,7 @@ struct cache {
 
     void free(void *ptr)
     {
-        slab *slab_to_free = get_slab(ptr);
+        array_slab *slab_to_free = get_slab(ptr);
 
         slab_to_free->free_memory(ptr);
         slab *it = nullptr;
