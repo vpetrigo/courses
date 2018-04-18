@@ -397,19 +397,7 @@ struct cache {
         array_slab *slab_to_free = get_slab(ptr);
 
         slab_to_free->free_memory(ptr);
-        slab *it = nullptr;
-        if (!list_empty(&slabs_full)) {
-            list_for_each_entry(it, &slabs_full, slabs)
-            {
-                if (it == slab_to_free) {
-                    // remove SLAB from fully occupied SLAB list
-                    list_remove(&slab_to_free->slabs);
-                    // append this SLAB to partial free SLAB list
-                    list_append(&slabs_partial, &slab_to_free->slabs);
-                    return;
-                }
-            }
-        }
+        array_slab *it = nullptr;
 
         if (slab_to_free->is_empty() && !list_empty(&slabs_partial)) {
             it = nullptr;
