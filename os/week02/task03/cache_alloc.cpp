@@ -399,16 +399,16 @@ struct cache {
         slab_to_free->free_memory(ptr);
         array_slab *it = nullptr;
 
-        if (slab_to_free->is_empty() && !list_empty(&slabs_partial)) {
-            it = nullptr;
-            list_for_each_entry(it, &slabs_partial, slabs)
-            {
-                if (it == slab_to_free) {
-                    list_remove(&slab_to_free->slabs);
-                    list_append(&slabs_free, &slab_to_free->slabs);
-                    return;
-                }
-            }
+        if (slab_to_free->get_list() == &slabs_full)
+        {
+            list_remove(&slab_to_free->slabs);
+            list_append(&slabs_partial, &slab_to_free->slabs);
+            slab_to_free->set_list(&slabs_partial);
+        }
+        else if (slab_to_free->is_empty()) {
+            list_remove(&slab_to_free->slabs);
+            list_append(&slabs_free, &slab_to_free->slabs);
+            slab_to_free->set_list(&slabs_free);
         }
     }
 
