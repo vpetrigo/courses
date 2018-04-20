@@ -422,7 +422,7 @@ struct cache {
     }
 
   private:
-    slab *get_slab(void *ptr) const
+    array_slab *get_slab(void *ptr) const
     {
         return reinterpret_cast<slab *>(
             reinterpret_cast<char *>(reinterpret_cast<std::size_t>(ptr) &
