@@ -424,7 +424,7 @@ struct cache {
   private:
     array_slab *get_slab(void *ptr) const
     {
-        return reinterpret_cast<slab *>(
+        return reinterpret_cast<array_slab *>(
             reinterpret_cast<char *>(reinterpret_cast<std::size_t>(ptr) &
                                      ~(alloc_size(slab_order) - 1)) +
             alloc_size(slab_order) - sizeof(slab));
