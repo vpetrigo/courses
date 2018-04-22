@@ -427,7 +427,7 @@ struct cache {
         return reinterpret_cast<array_slab *>(
             reinterpret_cast<char *>(reinterpret_cast<std::size_t>(ptr) &
                                      ~(alloc_size(slab_order) - 1)) +
-            alloc_size(slab_order) - sizeof(slab));
+            alloc_size(slab_order) - sizeof(array_slab));
     }
 
     void release_slabs_list(list *list)
