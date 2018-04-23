@@ -433,7 +433,7 @@ struct cache {
     void release_slabs_list(list *list)
     {
         if (!list_empty(list)) {
-            slab *it = list_head(list, slab, slabs);
+            array_slab *it = list_head(list, array_slab, slabs);
 
             while (&it->slabs != list) {
                 slab *tmp = list_next(it, slabs);
