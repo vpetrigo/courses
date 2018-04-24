@@ -436,7 +436,7 @@ struct cache {
             array_slab *it = list_head(list, array_slab, slabs);
 
             while (&it->slabs != list) {
-                slab *tmp = list_next(it, slabs);
+                array_slab *tmp = list_next(it, slabs);
                 list_remove(&it->slabs);
                 it->release();
                 free_slab(it->mem);
