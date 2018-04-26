@@ -455,6 +455,7 @@ struct cache {
     size_t object_size; /* размер аллоцируемого объекта */
     int slab_order;     /* используемый размер SLAB-а */
     size_t slab_objects; /* количество объектов в одном SLAB-е */
+    std::size_t slab_max_elems;
 };
 
 int determine_slab_order(std::size_t object_size, std::size_t num_of_elems)
