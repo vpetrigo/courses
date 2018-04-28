@@ -463,12 +463,20 @@ std::pair<int, int> determine_slab_order(std::size_t object_size, std::size_t nu
     constexpr std::size_t MAX_ORDER = 10;
 
     for (int i = 0; i < MAX_ORDER + 1; ++i) {
-        if (alloc_size(i) - sizeof(slab) >= num_of_elems * object_size) {
-            return i;
+        if (alloc_size(i) - sizeof(array_slab) >= num_of_elems * object_size) {
+            return std::make_pair(i, MAX_SLAB_ELEMS);
         }
     }
 
-    return -1;
+    for (int i = MAX_SLAB_ELEMS; i >= 1; --i)
+    {
+        if (alloc_size(MAX_ORDER) - sizeof(array_slab) >= i * object_size)
+        {
+            return std::make_pair(MAX_ORDER, i);
+        }
+    }
+
+    return std::make_pair(0, 0);
 }
 
 /**
