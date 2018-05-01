@@ -599,6 +599,8 @@ void test3()
         ptr_list.emplace_back(tmp);
     }
 
+    std::random_shuffle(ptr_list.begin(), ptr_list.end());
+
     for (std::size_t i = 0; i < MAX_SLAB_ELEMS; ++i) {
         void *tmp = ptr_list.back();
 
