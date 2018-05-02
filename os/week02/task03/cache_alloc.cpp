@@ -618,7 +618,7 @@ void test4()
 {
     cache mem_cache;
     std::vector<void *> ptr_list;
-    constexpr std::size_t ALLOC_MEM_SIZE = MAX_SLAB_ELEMS * 8192;
+    constexpr std::size_t ALLOC_MEM_SIZE = MAX_SLAB_ELEMS * 2048;
 
     cache_setup(&mem_cache, 130000);
 
