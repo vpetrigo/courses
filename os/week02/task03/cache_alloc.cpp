@@ -628,6 +628,8 @@ void test4()
         ptr_list.emplace_back(tmp);
     }
 
+    std::random_shuffle(ptr_list.begin(), ptr_list.end());
+
     for (std::size_t i = MAX_SLAB_ELEMS * 32; i < MAX_SLAB_ELEMS * 128; ++i) {
         cache_free(&mem_cache, ptr_list[i]);
     }
