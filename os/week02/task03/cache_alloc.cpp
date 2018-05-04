@@ -650,6 +650,60 @@ void test4()
     std::cout << __func__ << ": passed" << std::endl;
 }
 
+void test5_array_slab()
+{
+    void *ptr = alloc_slab(4);
+    array_slab s{ptr, 4, 100};
+    void *data1 = s.get_memory();
+    void *data2 = s.get_memory();
+
+    assert(data1 != nullptr);
+    assert(data2 != nullptr);
+    assert(s.get_free_slots() == (MAX_SLAB_ELEMS - 2));
+    s.free_memory(data2);
+    assert(s.get_free_slots() == (MAX_SLAB_ELEMS - 1));
+    s.free_memory(data1);
+    assert(s.get_free_slots() == (MAX_SLAB_ELEMS));
+    s.release();
+    std::cout << __func__ << ": passed" << std::endl;
+}
+
+void test6_load()
+{
+    cache mem_cache;
+    std::vector<void *> ptr_list;
+    constexpr std::size_t ALLOC_MEM_SIZE = MAX_SLAB_ELEMS * 16;
+
+    cache_setup(&mem_cache, alloc_size(10) - sizeof(array_slab));
+
+    for (std::size_t i = 0; i < ALLOC_MEM_SIZE; ++i) {
+        void *tmp = cache_alloc(&mem_cache);
+        assert(tmp != nullptr);
+        ptr_list.emplace_back(tmp);
+    }
+
+    std::random_shuffle(ptr_list.begin(), ptr_list.end());
+
+    for (std::size_t i = MAX_SLAB_ELEMS * 8; i < MAX_SLAB_ELEMS * 12; ++i) {
+        cache_free(&mem_cache, ptr_list[i]);
+    }
+
+    cache_shrink(&mem_cache);
+    cache_release(&mem_cache);
+    ptr_list.clear();
+    cache_setup(&mem_cache, 512000);
+
+    for (std::size_t i = 0; i < ALLOC_MEM_SIZE; ++i) {
+        void *tmp = cache_alloc(&mem_cache);
+        assert(tmp != nullptr);
+        ptr_list.emplace_back(tmp);
+    }
+
+    cache_release(&mem_cache);
+    ptr_list.clear();
+    std::cout << __func__ << ": passed" << std::endl;
+}
+
 int main()
 {
     test1();
