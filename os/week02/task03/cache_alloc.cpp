@@ -1,10 +1,10 @@
+#include <algorithm>
 #include <cassert>
 #include <cstdlib>
 #include <iostream>
 #include <iterator>
 #include <memory>
 #include <vector>
-#include <algorithm>
 
 constexpr std::size_t ALIGNMENT = 4096; /**< Memory allocation minimal alignment */
 constexpr std::size_t MAX_SLAB_ELEMS = 32; /**< Maximum number of elements in a slab */
