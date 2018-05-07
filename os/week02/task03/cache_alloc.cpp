@@ -25,7 +25,8 @@ constexpr std::size_t alloc_size(int order) { return ALIGNMENT * (1 << order); }
  */
 void *get_slab_start(void *ptr, int order)
 {
-    return reinterpret_cast<void *>(reinterpret_cast<std::size_t>(ptr) & ~(alloc_size(order) - 1));
+    return reinterpret_cast<void *>(reinterpret_cast<std::size_t>(ptr) &
+                                    ~(alloc_size(order) - 1));
 }
 
 /**
