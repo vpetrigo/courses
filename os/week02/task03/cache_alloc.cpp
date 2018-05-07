@@ -6,12 +6,15 @@
 #include <memory>
 #include <vector>
 
-constexpr std::size_t ALIGNMENT = 4096; /**< Memory allocation minimal alignment */
-constexpr std::size_t MAX_SLAB_ELEMS = 32; /**< Maximum number of elements in a slab */
+constexpr std::size_t ALIGNMENT =
+    4096; /**< Memory allocation minimal alignment */
+constexpr std::size_t MAX_SLAB_ELEMS =
+    32; /**< Maximum number of elements in a slab */
 
 /**
  * \brief Get allocation size
- * \param[in] order Number of bytes in SLAB with given order (#ALIGNMENT * 2 ^ order) allocated memory
+ * \param[in] order Number of bytes in SLAB with given order (#ALIGNMENT * 2 ^
+ * order) allocated memory
  */
 constexpr std::size_t alloc_size(int order) { return ALIGNMENT * (1 << order); }
 
