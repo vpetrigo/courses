@@ -149,8 +149,10 @@ struct Slab {
 
 struct array_slab {
   public:
-    array_slab(void *mem, int slab_order, std::size_t object_size, std::size_t slab_elems = MAX_SLAB_ELEMS)
-        : slab_order{slab_order}, object_size{object_size}, slab_elems{slab_elems}
+    array_slab(void *mem, int slab_order, std::size_t object_size,
+               std::size_t slab_elems = MAX_SLAB_ELEMS)
+        : slab_order{slab_order}, object_size{object_size}, slab_elems{
+                                                                slab_elems}
     {
         free_slots = get_free_slots_mask(slab_elems);
         list_init(&slabs);
@@ -173,7 +175,8 @@ struct array_slab {
     {
         std::size_t mem_pos =
             std::distance(static_cast<char *>(get_slab_start(ptr, slab_order)),
-                          static_cast<char *>(ptr)) / object_size;
+                          static_cast<char *>(ptr)) /
+            object_size;
         free_slot(mem_pos);
     }
 
