@@ -180,7 +180,10 @@ struct array_slab {
         free_slot(mem_pos);
     }
 
-    bool is_empty() const { return free_slots == get_free_slots_mask(slab_elems); }
+    bool is_empty() const
+    {
+        return free_slots == get_free_slots_mask(slab_elems);
+    }
 
     bool is_full() const { return free_slots == 0; }
 
