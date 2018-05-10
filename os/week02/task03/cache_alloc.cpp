@@ -209,7 +209,8 @@ struct array_slab {
         return counter;
     }
 
-    void release() {
+    void release()
+    {
         free_slots = 0;
         free_slab(*mem_array_ptr);
     }
