@@ -215,9 +215,9 @@ struct array_slab {
         free_slab(*mem_array_ptr);
     }
 
-    void set_list(const list *list) {
-        cache_list = list;
-    }
+    void set_list(const list *list) { cache_list = list; }
+
+    const list *get_list(void) const { return cache_list; }
 
     const list *get_list(void) const {
         return cache_list;
