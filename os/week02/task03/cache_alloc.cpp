@@ -219,9 +219,6 @@ struct array_slab {
 
     const list *get_list(void) const { return cache_list; }
 
-    const list *get_list(void) const {
-        return cache_list;
-    }
   private:
     int get_first_free_slot(unsigned long mask)
     {
