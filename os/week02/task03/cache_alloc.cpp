@@ -222,7 +222,7 @@ struct array_slab {
   private:
     int get_first_free_slot(unsigned long mask)
     {
-        //return MAX_SLAB_ELEMS - __builtin_clz(free_slots) - 1;
+        // return MAX_SLAB_ELEMS - __builtin_clz(free_slots) - 1;
         for (int i = slab_elems - 1; i < slab_elems; --i) {
             if (free_slots & (1UL << i)) {
                 return i;
