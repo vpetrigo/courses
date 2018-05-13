@@ -238,10 +238,7 @@ struct array_slab {
         return mem_array_ptr[slab_elems - slot - 1];
     }
 
-    void free_slot(int slot)
-    {
-        free_slots |= (1UL << (slab_elems - slot - 1));
-    }
+    void free_slot(int slot) { free_slots |= (1UL << (slab_elems - slot - 1)); }
 
     void allocate_mem_blocks(void *mem)
     {
