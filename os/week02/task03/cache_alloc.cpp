@@ -368,7 +368,8 @@ struct cache {
                 void *new_mem = alloc_slab(slab_order);
                 array_slab *new_slab =
                     new (static_cast<char *>(new_mem) + alloc_size(slab_order) -
-                         sizeof(array_slab)) array_slab{new_mem, slab_order, object_size, slab_max_elems};
+                         sizeof(array_slab)) array_slab{
+                        new_mem, slab_order, object_size, slab_max_elems};
                 list_append(&slabs_partial, &new_slab->slabs);
                 sl = new_slab;
                 sl->set_list(&slabs_partial);
