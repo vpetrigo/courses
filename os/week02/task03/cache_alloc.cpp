@@ -405,8 +405,7 @@ struct cache {
         slab_to_free->free_memory(ptr);
         array_slab *it = nullptr;
 
-        if (slab_to_free->get_list() == &slabs_full)
-        {
+        if (slab_to_free->get_list() == &slabs_full) {
             list_remove(&slab_to_free->slabs);
             list_append(&slabs_partial, &slab_to_free->slabs);
             slab_to_free->set_list(&slabs_partial);
