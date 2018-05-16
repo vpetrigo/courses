@@ -463,7 +463,8 @@ struct cache {
     std::size_t slab_max_elems;
 };
 
-std::pair<int, int> determine_slab_order(std::size_t object_size, std::size_t num_of_elems)
+std::pair<int, int> determine_slab_order(std::size_t object_size,
+                                         std::size_t num_of_elems)
 {
     constexpr std::size_t MAX_ORDER = 10;
 
