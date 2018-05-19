@@ -587,7 +587,7 @@ void test2()
     cache_free(&mem_cache, data1);
     cache_free(&mem_cache, data2);
     cache_shrink(&mem_cache);
-    //cache_release(&mem_cache);
+    // cache_release(&mem_cache);
     std::cout << __func__ << ": passed" << std::endl;
 }
 
