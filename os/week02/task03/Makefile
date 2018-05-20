@@ -1,6 +1,6 @@
 CC := gcc
 CXX := g++
-CXXFLAGS := -std=c++11 -Wall
+CXXFLAGS := -std=c++11 -Wall -DLOCAL_PC
 LDFLAGS :=
 SRC := cache_alloc.cpp
 OBJ := $(patsubst %.cpp,%.o,$(SRC))
