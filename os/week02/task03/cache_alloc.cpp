@@ -5,6 +5,7 @@
 #include <iterator>
 #include <memory>
 #include <vector>
+#include <bitset>
 
 constexpr std::size_t ALIGNMENT =
     4096; /**< Memory allocation minimal alignment */
