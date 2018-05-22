@@ -44,6 +44,9 @@ void *get_slab_start(void *ptr, int order)
  * включительно), т. е. вы не можете аллоцировать больше
  * 4Mb за раз.
  **/
+#ifndef LOCAL_PC
+void *alloc_slab(int order);
+#else
 void *alloc_slab(int order)
 {
 #ifdef _WIN32
@@ -52,10 +55,14 @@ void *alloc_slab(int order)
     return aligned_alloc(alloc_size(order), alloc_size(order));
 #endif
 }
+#endif /* LOCAL_PC */
 /**
  * Освобождает участок ранее аллоцированный с помощью
  * функции alloc_slab.
  **/
+#ifndef LOCAL_PC
+void free_slab(void *slab);
+#else
 void free_slab(void *slab)
 {
 #ifdef _WIN32
@@ -64,6 +71,7 @@ void free_slab(void *slab)
     free(slab);
 #endif
 }
+#endif /* LOCAL_PC */
 
 struct list {
     struct list *next, *prev;
