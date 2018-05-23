@@ -146,6 +146,7 @@ unsigned long get_free_slots_mask(int max_elems)
 }
 
 struct Slab {
+    virtual ~Slab() = default;
     virtual void *get_memory() = 0;
     virtual void free_memory(void *ptr) = 0;
     virtual bool is_empty() const = 0;
@@ -156,22 +157,20 @@ struct Slab {
     virtual const list *get_list() const = 0;
 };
 
-struct array_slab {
+struct ArraySlab : Slab {
   public:
-    array_slab(void *mem, int slab_order, std::size_t object_size,
+    ArraySlab(void *memory, int slab_order, std::size_t object_size,
                std::size_t slab_elems = MAX_SLAB_ELEMS)
-        : slab_order{slab_order}, object_size{object_size}, slab_elems{
-                                                                slab_elems}
+        : object_size{object_size}, slab_order{slab_order}, slab_elems{slab_elems}, free_slots{get_free_slots_mask(slab_elems)}
     {
-        free_slots = get_free_slots_mask(slab_elems);
         list_init(&slabs);
-        allocate_mem_blocks(mem);
+        allocate_mem_blocks(memory);
     }
 
-    void *get_memory()
+    void *get_memory() override
     {
-        if (free_slots != 0) {
-            int slot = get_first_free_slot(free_slots);
+        if (free_slots.any()) {
+            int slot = get_first_free_slot();
 
             assert(slot >= 0);
             return allocate_slot(slot);
@@ -180,60 +179,52 @@ struct array_slab {
         return nullptr;
     }
 
-    void free_memory(void *ptr)
+    void free_memory(void *ptr) override
     {
         std::size_t mem_pos =
             std::distance(static_cast<char *>(get_slab_start(ptr, slab_order)),
-                          static_cast<char *>(ptr)) /
-            object_size;
+                          static_cast<char *>(ptr)) / object_size;
         free_slot(mem_pos);
     }
 
-    bool is_empty() const
+    bool is_empty() const override
     {
         return free_slots == get_free_slots_mask(slab_elems);
     }
 
-    bool is_full() const { return free_slots == 0; }
+    bool is_full() const override { return free_slots == 0; }
 
-    void print_mask(void)
+    int get_free_slots(void) const override
     {
-        for (std::size_t i = slab_elems - 1; i < slab_elems; --i) {
-            std::cout << (free_slots & (1UL << i));
-        }
-
-        std::cout << std::endl;
+        return free_slots.count();
     }
 
-    int get_free_slots(void)
-    {
-        int counter = 0;
-
-        for (std::size_t i = slab_elems - 1; i < slab_elems; --i) {
-            if ((free_slots & (1UL << i)) != 0) {
-                ++counter;
-            }
-        }
-
-        return counter;
-    }
-
-    void release()
+    void release() override
     {
         free_slots = 0;
         free_slab(*mem_array_ptr);
     }
 
-    void set_list(const list *list) { cache_list = list; }
+    void set_list(const list *list) override { cache_list = list; }
 
-    const list *get_list(void) const { return cache_list; }
+    const list *get_list(void) const override { return cache_list; }
+
+    void print_mask(void)
+    {
+        for (std::size_t i = slab_elems - 1; i < slab_elems; --i) {
+            std::cout << free_slots.test(i);
+        }
+
+        std::cout << std::endl;
+    }
 
   private:
-    int get_first_free_slot(unsigned long mask)
+    int get_first_free_slot() const
     {
-        // return MAX_SLAB_ELEMS - __builtin_clz(free_slots) - 1;
-        for (int i = slab_elems - 1; i < slab_elems; --i) {
-            if (free_slots & (1UL << i)) {
+        for (std::size_t i = slab_elems - 1; i < slab_elems; --i)
+        {
+            if (free_slots.test(i))
+            {
                 return i;
             }
         }
@@ -243,11 +234,11 @@ struct array_slab {
 
     void *allocate_slot(int slot)
     {
-        free_slots &= ~(1UL << slot);
+        free_slots.reset(slot);
         return mem_array_ptr[slab_elems - slot - 1];
     }
 
-    void free_slot(int slot) { free_slots |= (1UL << (slab_elems - slot - 1)); }
+    void free_slot(int slot) { free_slots.set(slab_elems - slot - 1); }
 
     void allocate_mem_blocks(void *mem)
     {
