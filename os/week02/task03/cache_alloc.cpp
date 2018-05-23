@@ -248,27 +248,27 @@ struct ArraySlab : Slab {
     }
 
   public:
-    int slab_order;
     std::size_t object_size;
+    int slab_order;
     std::size_t slab_elems;
-    unsigned long free_slots;
+    std::bitset<MAX_SLAB_ELEMS> free_slots;
     void *mem_array_ptr[MAX_SLAB_ELEMS];
     const list *cache_list;
     list slabs;
 };
 
-struct slab {
+struct ListSlab : Slab {
   public:
-    slab(void *mem, int slab_order, std::size_t object_size)
-        : object_size{object_size}, mem{mem}, slab_order{slab_order}
+    ListSlab(void *mem, int slab_order, std::size_t object_size, std::size_t slab_max_elems = MAX_SLAB_ELEMS)
+        : object_size{object_size}, slab_order{slab_order}, slab_objects{slab_max_elems}, free_slots{slab_objects}
     {
-        free_slots = MAX_SLAB_ELEMS;
+        free_slots = slab_max_elems;
         list_init(&mem_blocks);
         list_init(&slabs);
         allocate_mem_blocks(mem);
     }
 
-    void *get_memory(void)
+    void *get_memory(void) override
     {
         if (free_slots > 0) {
             --free_slots;
@@ -287,7 +287,7 @@ struct slab {
         return nullptr;
     }
 
-    void free_memory(void *data)
+    void free_memory(void *data) override
     {
         mem_block *ptr = nullptr;
 
@@ -301,17 +301,28 @@ struct slab {
         }
     }
 
-    void release()
+    void release() override
     {
-        void *mem_block_start = list_head(&mem_blocks, mem_block, blocks);
+        mem_block *mem_block_start = list_head(&mem_blocks, mem_block, blocks);
+        free_slab(mem_block_start->data);
         free_slab(get_slab_start(mem_block_start, 0));
     }
 
-    bool is_full() const { return free_slots == 0; }
+    bool is_full() const override { return free_slots == 0; }
 
-    bool is_empty() const { return free_slots == MAX_SLAB_ELEMS; }
+    bool is_empty() const override { return free_slots == slab_objects; }
 
-    std::size_t get_free_slots() const { return free_slots; }
+    int get_free_slots() const override { return free_slots; }
+
+    void set_list(const list *list) override
+    {
+        cache_list = list;
+    }
+
+    const list *get_list() const override
+    {
+        return cache_list;
+    }
 
     void traverse_mem_blocks()
     {
@@ -331,7 +342,7 @@ struct slab {
         constexpr std::size_t MEMBLOCK_ORDER = 0;
         void *mem = alloc_slab(MEMBLOCK_ORDER);
 
-        for (std::size_t i = 0; i < MAX_SLAB_ELEMS; ++i) {
+        for (std::size_t i = 0; i < slab_objects; ++i) {
             void *mem_block_ptr =
                 static_cast<char *>(mem) + i * sizeof(mem_block);
             mem_block *tmp = new (mem_block_ptr) mem_block{
@@ -341,11 +352,12 @@ struct slab {
     }
 
   public:
-    std::size_t free_slots;
     std::size_t object_size;
-    void *mem;
     int slab_order;
+    std::size_t slab_objects;
+    std::size_t free_slots;
     list mem_blocks;
+    const list *cache_list;
     list slabs;
 };
 /**
