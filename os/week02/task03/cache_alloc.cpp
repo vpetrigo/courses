@@ -372,23 +372,22 @@ struct cache {
     {
         bool has_partial = !list_empty(&slabs_partial);
         bool has_free = !list_empty(&slabs_free);
-        array_slab *sl = nullptr;
+        ArraySlab *sl = nullptr;
 
         if (!has_partial) {
             if (!has_free) {
                 // allocate a new free slab
                 void *new_mem = alloc_slab(slab_order);
-                array_slab *new_slab =
+                ArraySlab *new_slab =
                     new (static_cast<char *>(new_mem) + alloc_size(slab_order) -
-                         sizeof(array_slab)) array_slab{
-                        new_mem, slab_order, object_size, slab_max_elems};
+                         sizeof(ArraySlab)) ArraySlab{new_mem, slab_order, object_size, slab_objects};
                 list_append(&slabs_partial, &new_slab->slabs);
                 sl = new_slab;
                 sl->set_list(&slabs_partial);
             }
             else {
                 // start using free slab
-                sl = list_head(&slabs_free, array_slab, slabs);
+                sl = list_head(&slabs_free, ArraySlab, slabs);
                 list_remove(&sl->slabs);
                 list_append(&slabs_partial, &sl->slabs);
                 sl->set_list(&slabs_partial);
@@ -396,7 +395,7 @@ struct cache {
         }
         else {
             // use partial
-            sl = list_head(&slabs_partial, array_slab, slabs);
+            sl = list_head(&slabs_partial, ArraySlab, slabs);
         }
 
         void *mem = sl->get_memory();
@@ -412,10 +411,9 @@ struct cache {
 
     void free(void *ptr)
     {
-        array_slab *slab_to_free = get_slab(ptr);
+        ArraySlab *slab_to_free = get_slab(ptr);
 
         slab_to_free->free_memory(ptr);
-        array_slab *it = nullptr;
 
         if (slab_to_free->get_list() == &slabs_full) {
             list_remove(&slab_to_free->slabs);
@@ -439,21 +437,19 @@ struct cache {
     }
 
   private:
-    array_slab *get_slab(void *ptr) const
+    ArraySlab *get_slab(void *ptr) const
     {
-        return reinterpret_cast<array_slab *>(
-            reinterpret_cast<char *>(reinterpret_cast<std::size_t>(ptr) &
-                                     ~(alloc_size(slab_order) - 1)) +
-            alloc_size(slab_order) - sizeof(array_slab));
+        return reinterpret_cast<ArraySlab *>(
+            reinterpret_cast<char *>(get_slab_start(ptr, slab_order)) + alloc_size(slab_order) - sizeof(ArraySlab));
     }
 
     void release_slabs_list(list *list)
     {
         if (!list_empty(list)) {
-            array_slab *it = list_head(list, array_slab, slabs);
+            ArraySlab *it = list_head(list, ArraySlab, slabs);
 
             while (&it->slabs != list) {
-                array_slab *tmp = list_next(it, slabs);
+                ArraySlab *tmp = list_next(it, slabs);
                 list_remove(&it->slabs);
                 it->release();
                 it = tmp;
