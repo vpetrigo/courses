@@ -468,22 +468,22 @@ struct cache {
     size_t object_size; /* размер аллоцируемого объекта */
     int slab_order;     /* используемый размер SLAB-а */
     size_t slab_objects; /* количество объектов в одном SLAB-е */
-    std::size_t slab_max_elems;
 };
 
+template <typename T>
 std::pair<int, int> determine_slab_order(std::size_t object_size,
                                          std::size_t num_of_elems)
 {
-    constexpr std::size_t MAX_ORDER = 10;
+    constexpr int MAX_ORDER = 10;
 
     for (int i = 0; i < MAX_ORDER + 1; ++i) {
-        if (alloc_size(i) - sizeof(array_slab) >= num_of_elems * object_size) {
+        if (alloc_size(i) - sizeof(T) >= num_of_elems * object_size) {
             return std::make_pair(i, MAX_SLAB_ELEMS);
         }
     }
 
     for (int i = MAX_SLAB_ELEMS; i >= 1; --i) {
-        if (alloc_size(MAX_ORDER) - sizeof(array_slab) >= i * object_size) {
+        if (alloc_size(MAX_ORDER) - sizeof(T) >= i * object_size) {
             return std::make_pair(MAX_ORDER, i);
         }
     }
