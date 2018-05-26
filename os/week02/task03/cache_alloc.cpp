@@ -507,11 +507,10 @@ void cache_setup(struct cache *cache, size_t object_size)
     list_init(&cache->slabs_partial);
     list_init(&cache->slabs_full);
     std::pair<int, int> slab_param =
-        determine_slab_order(cache->object_size, MAX_SLAB_ELEMS);
+        determine_slab_order<ArraySlab>(cache->object_size, MAX_SLAB_ELEMS);
     cache->slab_order = slab_param.first;
-    cache->slab_max_elems = slab_param.second;
+    cache->slab_objects = slab_param.second;
     assert(cache->slab_order >= 0);
-    cache->slab_objects = MAX_SLAB_ELEMS;
 }
 
 /**
