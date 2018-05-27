@@ -563,10 +563,11 @@ void cache_shrink(struct cache *cache)
     cache->shrink();
 }
 
+#ifdef LOCAL_PC
 void test1()
 {
     void *ptr = alloc_slab(4);
-    slab s{ptr, 4, 32};
+    ListSlab s{ptr, 4, 32};
     void *data1 = s.get_memory();
     void *data2 = s.get_memory();
 
@@ -578,7 +579,6 @@ void test1()
     s.free_memory(data1);
     assert(s.get_free_slots() == (MAX_SLAB_ELEMS));
     s.release();
-    free_slab(ptr);
     std::cout << __func__ << ": passed" << std::endl;
 }
 
