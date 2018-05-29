@@ -664,7 +664,7 @@ void test4()
 void test5_array_slab()
 {
     void *ptr = alloc_slab(4);
-    array_slab s{ptr, 4, 100};
+    ArraySlab s{ptr, 4, 100};
     void *data1 = s.get_memory();
     void *data2 = s.get_memory();
 
