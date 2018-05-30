@@ -685,7 +685,7 @@ void test6_load()
     std::vector<void *> ptr_list;
     constexpr std::size_t ALLOC_MEM_SIZE = MAX_SLAB_ELEMS * 16;
 
-    cache_setup(&mem_cache, alloc_size(10) - sizeof(array_slab));
+    cache_setup(&mem_cache, alloc_size(10) - sizeof(ArraySlab));
 
     for (std::size_t i = 0; i < ALLOC_MEM_SIZE; ++i) {
         void *tmp = cache_alloc(&mem_cache);
@@ -725,3 +725,4 @@ int main()
     test6_load();
     return 0;
 }
+#endif /* LOCAL_PC */
