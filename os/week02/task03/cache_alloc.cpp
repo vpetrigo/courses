@@ -1,11 +1,11 @@
 #include <algorithm>
+#include <bitset>
 #include <cassert>
 #include <cstdlib>
 #include <iostream>
 #include <iterator>
 #include <memory>
 #include <vector>
-#include <bitset>
 
 constexpr std::size_t ALIGNMENT =
     4096; /**< Memory allocation minimal alignment */
@@ -160,8 +160,9 @@ struct Slab {
 struct ArraySlab : Slab {
   public:
     ArraySlab(void *memory, int slab_order, std::size_t object_size,
-               std::size_t slab_elems = MAX_SLAB_ELEMS)
-        : object_size{object_size}, slab_order{slab_order}, slab_elems{slab_elems}, free_slots{get_free_slots_mask(slab_elems)}
+              std::size_t slab_elems = MAX_SLAB_ELEMS)
+        : object_size{object_size}, slab_order{slab_order},
+          slab_elems{slab_elems}, free_slots{get_free_slots_mask(slab_elems)}
     {
         list_init(&slabs);
         allocate_mem_blocks(memory);
@@ -183,7 +184,8 @@ struct ArraySlab : Slab {
     {
         std::size_t mem_pos =
             std::distance(static_cast<char *>(get_slab_start(ptr, slab_order)),
-                          static_cast<char *>(ptr)) / object_size;
+                          static_cast<char *>(ptr)) /
+            object_size;
         free_slot(mem_pos);
     }
 
