@@ -196,10 +196,7 @@ struct ArraySlab : Slab {
 
     bool is_full() const override { return free_slots == 0; }
 
-    int get_free_slots(void) const override
-    {
-        return free_slots.count();
-    }
+    int get_free_slots(void) const override { return free_slots.count(); }
 
     void release() override
     {
@@ -223,10 +220,8 @@ struct ArraySlab : Slab {
   private:
     int get_first_free_slot() const
     {
-        for (std::size_t i = slab_elems - 1; i < slab_elems; --i)
-        {
-            if (free_slots.test(i))
-            {
+        for (std::size_t i = slab_elems - 1; i < slab_elems; --i) {
+            if (free_slots.test(i)) {
                 return i;
             }
         }
@@ -261,8 +256,10 @@ struct ArraySlab : Slab {
 
 struct ListSlab : Slab {
   public:
-    ListSlab(void *mem, int slab_order, std::size_t object_size, std::size_t slab_max_elems = MAX_SLAB_ELEMS)
-        : object_size{object_size}, slab_order{slab_order}, slab_objects{slab_max_elems}, free_slots{slab_objects}
+    ListSlab(void *mem, int slab_order, std::size_t object_size,
+             std::size_t slab_max_elems = MAX_SLAB_ELEMS)
+        : object_size{object_size}, slab_order{slab_order},
+          slab_objects{slab_max_elems}, free_slots{slab_objects}
     {
         free_slots = slab_max_elems;
         list_init(&mem_blocks);
@@ -316,15 +313,9 @@ struct ListSlab : Slab {
 
     int get_free_slots() const override { return free_slots; }
 
-    void set_list(const list *list) override
-    {
-        cache_list = list;
-    }
+    void set_list(const list *list) override { cache_list = list; }
 
-    const list *get_list() const override
-    {
-        return cache_list;
-    }
+    const list *get_list() const override { return cache_list; }
 
     void traverse_mem_blocks()
     {
@@ -380,9 +371,10 @@ struct cache {
             if (!has_free) {
                 // allocate a new free slab
                 void *new_mem = alloc_slab(slab_order);
-                ArraySlab *new_slab =
-                    new (static_cast<char *>(new_mem) + alloc_size(slab_order) -
-                         sizeof(ArraySlab)) ArraySlab{new_mem, slab_order, object_size, slab_objects};
+                ArraySlab *new_slab = new (static_cast<char *>(new_mem) +
+                                           alloc_size(slab_order) -
+                                           sizeof(ArraySlab))
+                    ArraySlab{new_mem, slab_order, object_size, slab_objects};
                 list_append(&slabs_partial, &new_slab->slabs);
                 sl = new_slab;
                 sl->set_list(&slabs_partial);
@@ -442,7 +434,8 @@ struct cache {
     ArraySlab *get_slab(void *ptr) const
     {
         return reinterpret_cast<ArraySlab *>(
-            reinterpret_cast<char *>(get_slab_start(ptr, slab_order)) + alloc_size(slab_order) - sizeof(ArraySlab));
+            reinterpret_cast<char *>(get_slab_start(ptr, slab_order)) +
+            alloc_size(slab_order) - sizeof(ArraySlab));
     }
 
     void release_slabs_list(list *list)
