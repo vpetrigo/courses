@@ -133,10 +133,10 @@ static inline void list_remove(struct list *link)
          &pos->member != (list); pos = list_next(pos, member))
 
 struct mem_block {
-    mem_block(void *d, bool free) : data{d}, free{free} { list_init(&blocks); }
+    mem_block(void *d, bool is_free) : data{d}, is_free{is_free} { list_init(&blocks); }
 
     void *data;
-    bool free;
+    bool is_free;
     list blocks;
 };
 
@@ -276,8 +276,8 @@ struct ListSlab : Slab {
 
             list_for_each_entry(ptr, &mem_blocks, blocks)
             {
-                if (ptr->free) {
-                    ptr->free = false;
+                if (ptr->is_free) {
+                    ptr->is_free = false;
                     return ptr->data;
                 }
             }
@@ -293,7 +293,7 @@ struct ListSlab : Slab {
         list_for_each_entry(ptr, &mem_blocks, blocks)
         {
             if (ptr->data == data) {
-                ptr->free = true;
+                ptr->is_free = true;
                 ++free_slots;
                 break;
             }
@@ -324,7 +324,7 @@ struct ListSlab : Slab {
         list_for_each_entry(ptr, &mem_blocks, blocks)
         {
             std::cout << i++ << std::endl;
-            std::cout << "Is free: " << ptr->free << std::endl;
+            std::cout << "Is free: " << ptr->is_free << std::endl;
             std::cout << "Ptr: " << ptr->data << std::endl;
         }
     }
