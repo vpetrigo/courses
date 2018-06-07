@@ -7,9 +7,11 @@
 int main()
 {
     using Task = std::pair<int, int>;
+
     std::vector<Task> tasks;
     int id = 0;
     int n;
+
     std::cin >> n;
 
     tasks.reserve(n);
