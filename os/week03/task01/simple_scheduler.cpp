@@ -17,9 +17,10 @@ int main()
     tasks.reserve(n);
     std::istream_iterator<int> it{std::cin};
     std::istream_iterator<int> sent{};
-    std::transform(it, sent, std::back_inserter(tasks), [&id](const int &elem) -> std::vector<Task>::value_type {
-        return {elem, id++};
-    });
+    std::transform(it, sent, std::back_inserter(tasks),
+                   [&id](const int &elem) -> std::vector<Task>::value_type {
+                       return {elem, id++};
+                   });
     std::sort(tasks.begin(), tasks.end());
     std::for_each(tasks.cbegin(), tasks.cend(),
                   [](const auto &task) { std::cout << task.second << " "; });
