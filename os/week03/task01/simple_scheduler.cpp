@@ -18,7 +18,7 @@ int main()
     std::istream_iterator<int> it{std::cin};
     std::istream_iterator<int> sent{};
     std::transform(it, sent, std::back_inserter(tasks),
-                   [&id](const int &elem) -> std::vector<Task>::value_type {
+                   [&id](const int &elem) -> Task {
                        return {elem, id++};
                    });
     std::sort(tasks.begin(), tasks.end());
