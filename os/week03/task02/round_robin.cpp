@@ -1,7 +1,7 @@
 #include <queue>
 
 static std::queue<int> task_queue_;
-static unsigned tick_ = 0;
+static int tick_ = 0;
 static int timeslice_ = 0;
 
 static void remove_task()
@@ -108,3 +108,5 @@ int current_thread()
 
     return -1;
 }
+
+int main() { return 0; }
