@@ -86,8 +86,7 @@ void wake_thread(int thread_id)
 void timer_tick()
 {
     /* Put your code here */
-    if (++tick_ == timeslice_ && !task_queue_.empty())
-    {
+    if (++tick_ == timeslice_ && !task_queue_.empty()) {
         task_queue_.push(task_queue_.front());
         remove_task();
     }
@@ -103,10 +102,9 @@ void timer_tick()
 int current_thread()
 {
     /* Put your code here */
-    if (!task_queue_.empty())
-    {
+    if (!task_queue_.empty()) {
         return task_queue_.front();
     }
-    
+
     return -1;
 }
