@@ -17,8 +17,6 @@ void wait(struct condition *cv, struct lock *lock);
 void notify_one(struct condition *cv);
 void notify_all(struct condition *cv);
 
-
-
 /* Далее следует интерфейс, который вам нужно реализовать.
 
    ВАЖНО: в шаблоне кода стукрутуры содержат поля, некоторые
@@ -39,28 +37,26 @@ struct wdlock {
     /* wdlock_ctx должен хранить информацию обо всех
        захваченных wdlock-ах, а это поле позволит связать
        wdlock-и в список. */
-	struct wdlock *next;
+    struct wdlock *next;
 
     /* Текущий владелец блокировки - из него мы извлекаем
        timestamp связанный с блокировкой, если блокировка
        свободна, то хранит NULL. */
-	const struct wdlock_ctx *owner;
+    const struct wdlock_ctx *owner;
 
     /* lock и cv могут быть использованы чтобы дождаться
        пока блокировка не освободится либо у нее не сменится
        владелец. */
-	struct lock lock;
-	struct condition cv;
+    struct lock lock;
+    struct condition cv;
 };
-
 
 /* Каждый контекст имеет свой уникальный timestamp и хранит
    список захваченных блокировок. */
 struct wdlock_ctx {
-	unsigned long long timestamp;
-	struct wdlock *locks;
+    unsigned long long timestamp;
+    struct wdlock *locks;
 };
-
 
 /* Всегда вызывается перед тем, как использовать контекст.
 
@@ -69,10 +65,10 @@ struct wdlock_ctx {
 */
 void wdlock_ctx_init(struct wdlock_ctx *ctx)
 {
-	static atomic_ullong next;
+    static atomic_ullong next;
 
-	ctx->timestamp = atomic_fetch_add(&next, 1) + 1;
-	ctx->locks = NULL;
+    ctx->timestamp = atomic_fetch_add(&next, 1) + 1;
+    ctx->locks = NULL;
 }
 
 /* Всегда вызывается перед тем, как использовать блокировку.
@@ -82,9 +78,9 @@ void wdlock_ctx_init(struct wdlock_ctx *ctx)
 */
 void wdlock_init(struct wdlock *lock)
 {
-	lock_init(&lock->lock);
-	condition_init(&lock->cv);
-	lock->owner = NULL;
+    lock_init(&lock->lock);
+    condition_init(&lock->cv);
+    lock->owner = NULL;
 }
 
 /* Функция для захвата блокировки l контекстом ctx. Если
@@ -105,8 +101,7 @@ int wdlock_lock(struct wdlock *l, struct wdlock_ctx *ctx)
     lock(&l->lock);
 
     while (l->owner != NULL) {
-        if (l->owner->timestamp <= ctx->timestamp)
-        {
+        if (l->owner->timestamp <= ctx->timestamp) {
             unlock(&l->lock);
             return 0;
         }
@@ -133,10 +128,10 @@ int wdlock_lock(struct wdlock *l, struct wdlock_ctx *ctx)
 
 void wdlock_unlock(struct wdlock_ctx *ctx)
 {
-	// Ваш код здесь
+    // Ваш код здесь
     while (ctx->locks != NULL) {
         struct wdlock *tmp = ctx->locks;
-        
+
         lock(&tmp->lock);
         tmp->owner = NULL;
         ctx->locks = tmp->next;
