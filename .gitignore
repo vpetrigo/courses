@@ -21,6 +21,7 @@ __pycache__/
 
 # Java output
 **/*.class
+**/*.jar
 
 # DB files
 **/*.db
