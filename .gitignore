@@ -34,3 +34,6 @@ __pycache__/
 **/*.ko
 **/*.ko.cmd
 **/.tmp_versions/
+
+# Gradle
+.gradle/
