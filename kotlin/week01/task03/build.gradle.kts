@@ -7,10 +7,6 @@ application {
     mainClassName = "task03.NamedArgsKt"
 }
 
-repositories {
-    mavenCentral()
-}
-
 dependencies {
     compile(kotlin("stdlib"))
 }

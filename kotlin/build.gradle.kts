@@ -7,3 +7,9 @@
 plugins {
     kotlin("jvm") version "1.2.50"
 }
+
+allprojects {
+    repositories {
+        mavenCentral()
+    }
+}
