@@ -1,7 +1,6 @@
 package week04.task02
 
 class LazyProperty(val initializer: () -> Int) {
-    /* TODO */
     private var _lazy: Int? = null
     val lazy: Int
         get() {
