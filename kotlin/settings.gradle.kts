@@ -12,3 +12,4 @@ rootProject.name = "kotlin"
 include("week01/task03")
 include("week04/task01")
 include("week04/task02")
+include("week04/task03")
