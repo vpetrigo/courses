@@ -19,3 +19,8 @@ fun createMap(): Map<Int, String> {
         }
     }
 }
+
+fun main(args: Array<String>) {
+    println(createString())
+    println(createMap())
+}
