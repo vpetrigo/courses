@@ -2,11 +2,7 @@ package week06.task01
 
 import java.util.*
 
-fun <T, C : MutableCollection<in T>> Collection<T>.partitionTo(first: C, second: C, predicate: (T) -> Boolean) : Pair<C, C> {
-    val (g1, g2) = partition(predicate)
-
-    return g1.toCollection(first) to g2.toCollection(second)
-}
+fun <T, C : MutableCollection<in T>> Collection<T>.partitionTo(first: C, second: C, predicate: (T) -> Boolean) : Pair<C, C> = partition(predicate).let { it.first.toCollection(first) to it.second.toCollection(second) }
 
 fun partitionWordsAndLines() {
     val (words, lines) = listOf("a", "a b", "c", "d e").
