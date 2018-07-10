@@ -11,4 +11,4 @@ rootProject.name = "kotlin"
 
 include("week01/task03", "week04/task01", "week04/task02",
     "week04/task03", "week04/task04", "week05/task01",
-    "week05/task02", "week05/task03")
+    "week05/task02", "week05/task03", "week06/task01")
