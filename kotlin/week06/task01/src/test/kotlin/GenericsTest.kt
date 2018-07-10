@@ -10,4 +10,11 @@ class GenericsTest {
         assertEquals(words, listOf("a", "c"))
         assertEquals(lines, listOf("a b", "d e"))
     }
+
+    @Test fun testPartitionToHashSet() {
+        val (letters, other) = setOf('a', '%', 'r', '}').
+            partitionTo(HashSet<Char>(), HashSet()) { c -> c in 'a'..'z' || c in 'A'..'Z'}
+        assertEquals(letters, setOf('a', 'r'))
+        assertEquals(other, setOf('%', '}'))
+    }
 }
