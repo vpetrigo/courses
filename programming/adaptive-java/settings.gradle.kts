@@ -9,4 +9,4 @@
 
 rootProject.name = "adaptive-java"
 
-include("section03/task37")
+include("section03/task37", "section03/task61")
