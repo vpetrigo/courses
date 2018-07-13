@@ -3,7 +3,7 @@ plugins {
 }
 
 application {
-    mainClassName = "section03.task114.TreeMapTutor"
+    mainClassName = "section01.task165.PrimeFactorization"
 }
 
 dependencies {
@@ -15,4 +15,8 @@ dependencies {
 
 tasks.withType<Test> {
     useJUnitPlatform()
+}
+
+val run by tasks.getting(JavaExec::class) {
+    standardInput = System.`in`
 }
