@@ -20,6 +20,5 @@ public class GradeCounter {
 
         IntStream.range(0, nGrades).forEach((n) -> grades.add(reader.nextInt()));
         Arrays.stream(calculateGradesDistribution(grades)).forEach((e) -> System.out.printf("%d ", e));
-        calculateGradesDistribution(null);
     }
 }
