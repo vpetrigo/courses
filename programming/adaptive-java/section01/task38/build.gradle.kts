@@ -3,7 +3,7 @@ plugins {
 }
 
 application {
-
+    mainClassName = "section01.task38.GradeCounter"
 }
 
 dependencies {
