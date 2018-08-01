@@ -14,7 +14,7 @@ public class Genome {
             System.out.println((double)nGC / line.length() * 100);
         }
         catch (IOException e) {
-
+            System.out.println(e.getMessage());
         }
     }
 }
