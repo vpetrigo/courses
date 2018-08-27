@@ -14,6 +14,7 @@ public class MainTest {
         IntStream evenStream = IntStream.builder().add(30).add(60).add(90).build();
         IntStream concatStream = Main.createFilteringStream(oddStream, evenStream);
 
-        Assertions.assertEquals(Arrays.asList(75, 90), concatStream.boxed().collect(Collectors.toList()));
+        Assertions.assertEquals(Arrays.asList(75, 90),
+                concatStream.boxed().collect(Collectors.toList()));
     }
 }
