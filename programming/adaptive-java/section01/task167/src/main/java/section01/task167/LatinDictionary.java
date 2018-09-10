@@ -19,9 +19,7 @@ public class LatinDictionary {
                 }
         ));
 
-        latinDictionary.forEach((key, value) -> {
-            Collections.sort(value);
-        });
+        latinDictionary.forEach((key, value) -> Collections.sort(value));
 
         return latinDictionary;
     }
