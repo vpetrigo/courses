@@ -18,7 +18,7 @@ public class Functional {
                 IntUnaryOperator resultOp = IntUnaryOperator.identity();
 
                 for (IntUnaryOperator op : intUnaryOperators) {
-                    resultOp.andThen(op);
+                    resultOp = resultOp.andThen(op);
                 }
 
                 List<Integer> mapList = new ArrayList<>();
