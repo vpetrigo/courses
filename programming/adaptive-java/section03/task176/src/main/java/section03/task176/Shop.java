@@ -13,6 +13,13 @@ public class Shop {
                 login)).findFirst();
     }
 
+    public static void printBalanceIfNotEmpty(String userLogin) {
+        findUserByLogin(userLogin).map(User::getAccount)
+                                  .map(Account::getBalance)
+                                  .filter(balance -> balance > 0)
+                                  .ifPresent(balance -> System.out.printf("%s: %d\n", userLogin, balance));
+    }
+
     public static boolean addUser(User user) {
         return users.add(user);
     }
