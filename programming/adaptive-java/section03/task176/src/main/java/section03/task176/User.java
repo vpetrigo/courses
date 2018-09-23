@@ -1,12 +1,14 @@
 package section03.task176;
 
 import java.util.Objects;
+import org.jetbrains.annotations.Nullable;
 
 public class User {
     private String login;
+    @Nullable
     private Account account;
 
-    public User(String login, Account account) {
+    public User(String login, @Nullable Account account) {
         this.login = login;
         this.account = account;
     }
@@ -15,6 +17,7 @@ public class User {
         return login;
     }
 
+    @Nullable
     public Account getAccount() {
         return account;
     }
