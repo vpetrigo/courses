@@ -18,7 +18,6 @@ public class ListMultiplicator {
 
         @SuppressWarnings("unchecked")
         List<Object> objectList = (List<Object>)list;
-
         int upperBound = list.size();
 
         for (int i = 0; i < n - 1; ++i)
