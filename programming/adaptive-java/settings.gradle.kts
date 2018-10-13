@@ -28,4 +28,4 @@ include(
     ":section03:task63", ":section01:task167", ":section01:task123",
     ":section03:task170", ":section01:task110", ":section03:task176",
     ":section03:task64", ":section03:task77", ":section03:task14",
-    ":section03:task89", ":section03:task21")
+    ":section03:task89", ":section03:task21", ":section03:task76")
