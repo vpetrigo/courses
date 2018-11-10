@@ -23,4 +23,9 @@ class ReflexiveBakerTest {
         Assertions.assertEquals(Cake.class,
                                 reflexiveBaker.bake(Cake.class).getClass());
     }
+
+    @Test
+    void testReflexiveBakerWithDarkBakery() {
+        Assertions.assertNull(reflexiveBaker.bake(DarkBakery.class));
+    }
 }
