@@ -8,7 +8,7 @@ import org.junit.jupiter.params.provider.MethodSource;
 import java.util.stream.Stream;
 
 class TestMatrixMaxSum {
-    @ParameterizedTest(name = "{index} ==> ''{0}''")
+    @ParameterizedTest(name = "{index} ==> ''{0}'' - {1}")
     @MethodSource("matrixProvider")
     void testMatrixMaxSum(int expected_sum, int[][] matrix) {
         MatrixMaxSum.Result result = MatrixMaxSum.findMaxSum(matrix);
