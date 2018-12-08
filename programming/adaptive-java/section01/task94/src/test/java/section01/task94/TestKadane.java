@@ -40,7 +40,7 @@ class TestKadane {
         }
     }
 
-    @ParameterizedTest(name = "{index} ==> ''{0}''")
+    @ParameterizedTest(name = "{index} ==> ''{0}'' - {1}")
     @MethodSource("arrayProvider")
     void testWithArrays(MaxSumExpected expected, int[] arr) {
         Kadane result = Kadane.getSubArrayMaxSum(arr);
