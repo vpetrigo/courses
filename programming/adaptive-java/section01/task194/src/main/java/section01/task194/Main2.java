@@ -7,6 +7,7 @@ class Main2 {
         for (int i = 0; i < l; i++) {
             System.out.print(arr[i] + " ");
         }
+
         System.out.println();
     }
 
@@ -38,6 +39,7 @@ class Main2 {
         }
 
         printSplit(arr, n);
+
         do {
             l = next(arr, l);
             printSplit(arr, l);
