@@ -1,11 +1,5 @@
 dist: trusty
 
-language: cpp
-
-compiler:
-  - gcc
-  - clang
-
 addons:
   apt:
     sources:
@@ -17,23 +11,31 @@ addons:
       - clang-4.0
       - ninja-build
 
-install:
-  - git submodule init
-  - git submodule update --recursive
-
-before_script:
-  - mkdir build
-  - cd build
-  - |
-      if [[ "$CC" = "clang" ]]; then
-        export CC=clang-4.0
-        export CXX=clang++-4.0
-      else
-        export CC=gcc-6
-        export CXX=g++-6
-      fi
-  - cmake .. -G "Ninja" -DCMAKE_BUILD_TYPE=Release
-
-script:
-  - cmake --build . -- -j4
-  - ctest
+matrix:
+    include:
+        - language: cpp
+          compiler: gcc
+          install:
+              - git submodule update --init --recursive
+          before_script:
+              - mkdir build
+              - cd build
+              - export CC=gcc-6
+              - export CXX=g++-6
+              - cmake .. -G "Ninja" -DCMAKE_BUILD_TYPE=Release
+          script:
+              - cmake --build . -- -j4
+              - ctest
+        - language: cpp
+          compiler: clang
+          install:
+              - git submodule update --init --recursive
+          before_script:
+              - mkdir build
+              - cd build
+              - export CC=clang-4.0
+              - export CXX=clang++-4.0
+              - cmake .. -G "Ninja" -DCMAKE_BUILD_TYPE=Release
+          script:
+              - cmake --build . -- -j4
+              - ctest
