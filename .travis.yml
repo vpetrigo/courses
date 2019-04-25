@@ -39,3 +39,10 @@ matrix:
           script:
               - cmake --build . -- -j4
               - ctest
+        - language: java
+          jdk: openjdk11
+          install:
+              - cd programming/adaptive-java
+              - ./gradlew assemble
+          script:
+              - ./gradlew check
