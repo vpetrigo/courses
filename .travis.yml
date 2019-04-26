@@ -1,20 +1,18 @@
-dist: trusty
-
-addons:
-  apt:
-    sources:
-      - ubuntu-toolchain-r-test
-      - llvm-toolchain-trusty-4.0
-    packages:
-      - gcc-6
-      - g++-6
-      - clang-4.0
-      - ninja-build
+dist: xenial
 
 matrix:
     include:
         - language: cpp
           compiler: gcc
+          addons:
+              apt:
+                  sources:
+                    - ubuntu-toolchain-r-test
+                  packages:
+                    - gcc-6
+                    - g++-6
+                    - ninja-build
+
           install:
               - git submodule update --init --recursive
           before_script:
@@ -28,13 +26,20 @@ matrix:
               - ctest
         - language: cpp
           compiler: clang
+          addons:
+              apt:
+                  sources:
+                    - llvm-toolchain-xenial-7
+                  packages:
+                    - clang-7
+                    - ninja-build
           install:
               - git submodule update --init --recursive
           before_script:
               - mkdir build
               - cd build
-              - export CC=clang-4.0
-              - export CXX=clang++-4.0
+              - export CC=clang-7
+              - export CXX=clang++-7
               - cmake .. -G "Ninja" -DCMAKE_BUILD_TYPE=Release
           script:
               - cmake --build . -- -j4
