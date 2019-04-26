@@ -29,17 +29,17 @@ matrix:
           addons:
               apt:
                   sources:
-                    - llvm-toolchain-xenial-7
+                    - llvm-toolchain-xenial-8
                   packages:
-                    - clang-7
+                    - clang-8
                     - ninja-build
           install:
               - git submodule update --init --recursive
           before_script:
               - mkdir build
               - cd build
-              - export CC=clang-7
-              - export CXX=clang++-7
+              - export CC=clang-8
+              - export CXX=clang++-8
               - cmake .. -G "Ninja" -DCMAKE_BUILD_TYPE=Release
           script:
               - cmake --build . -- -j4
