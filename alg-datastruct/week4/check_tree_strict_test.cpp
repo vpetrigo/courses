@@ -4,7 +4,7 @@
 #include <gtest/gtest.h>
 
 TEST(TreeStrict, correct_tree) {
-  std::vector<TreeNode> tree{{{2, 0}, 1, 2}, {{1, 1}, -1, -1}, {{2, 1}, -1, -1}};
+  std::vector<TreeNode> tree{TreeNode{{2, 0}, 1, 2}, TreeNode{{1, 1}, -1, -1}, TreeNode{{2, 1}, -1, -1}};
   TreeTraverse traverse{&tree};
 
   traverse.InOrder(tree.front());
@@ -12,7 +12,7 @@ TEST(TreeStrict, correct_tree) {
 }
 
 TEST(TreeStrict, incorrect_tree) {
-  std::vector<TreeNode> tree{{{2, 0}, 1, 2}, {{1, 1}, -1, 2}, {{2, 2}, -1, -1}};
+  std::vector<TreeNode> tree{TreeNode{{2, 0}, 1, 2}, TreeNode{{1, 1}, -1, 2}, TreeNode{{2, 2}, -1, -1}};
   TreeTraverse traverse{&tree};
 
   traverse.InOrder(tree.front());
