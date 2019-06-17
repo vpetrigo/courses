@@ -10,7 +10,7 @@ class SeleniumAnswer:
         self.remote = remote
         self.timeout = timeout
 
-    def send_answer(self, answer: str):
+    def send_answer(self, answer: str) -> bool:
         def wait_textarea(remote: Remote):
             return remote.find_element_by_css_selector("textarea.textarea")
 
