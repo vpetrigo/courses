@@ -15,7 +15,7 @@ class SeleniumAuth:
         self.password = password
         self.remote = remote
 
-    def auth(self):
+    def auth(self) -> None:
         self.remote.get(self.AUTH_LINK)
         WebDriverWait(
             self.remote,
