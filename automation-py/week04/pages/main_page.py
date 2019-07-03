@@ -1,7 +1,5 @@
 from .base_page import BasePage
-
-from selenium.webdriver.common.by import By
-from selenium.webdriver.remote.webelement import WebElement
+from .locators import MainPageLocators
 
 
 class MainPage(BasePage):
@@ -14,7 +12,7 @@ class MainPage(BasePage):
 
         :return: None
         """
-        link = self.browser.find_element(By.CSS_SELECTOR, "#login_link")
+        link = self.browser.find_element(*MainPageLocators.REGISTRATION_LINK)
         link.click()
 
     def should_be_login_link(self) -> None:
@@ -23,4 +21,4 @@ class MainPage(BasePage):
         :return: None
         """
         assert self.is_element_present(
-            By.CSS_SELECTOR, "#login_link"), "No login link on the main page"
+            *MainPageLocators.LOGIN_LINK), "No login link on the main page"
