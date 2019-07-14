@@ -20,7 +20,7 @@ class ProductPage(BasePage):
             *ProductPageLocators.ALERT_ADDED_TO_CART).text
         product_name = self.browser.find_element(
             *ProductPageLocators.PRODUCT_NAME).text
-        assert product_name in alert_text, \
+        assert product_name == alert_text, \
             f"The alert contains wrong product name: {alert_text} - {product_name}"
 
     def should_check_overall_cost(self) -> None:
