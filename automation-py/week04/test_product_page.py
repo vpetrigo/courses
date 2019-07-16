@@ -21,7 +21,8 @@ def test_guest_can_add_product_to_cart(browser, link: str) -> None:
 
 
 @pytest.mark.parametrize("link", offer_links)
-def test_guest_can_add_product_to_cart_with_different_offer_numbers(browser, link: str) -> None:
+def test_guest_can_add_product_to_cart_with_different_offer_numbers(
+        browser, link: str) -> None:
     product_page = ProductPage(browser, link)
     product_page.open()
     product_page.add_to_cart(True)
