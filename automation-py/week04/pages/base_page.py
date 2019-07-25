@@ -1,6 +1,7 @@
 from .locators import BasePageLocators
 
 import math
+from typing import Sequence
 from selenium.webdriver import Remote
 from selenium.common.exceptions import NoSuchElementException
 from selenium.common.exceptions import NoAlertPresentException
@@ -19,7 +20,6 @@ class BasePage:
         super().__init__()
         self.browser = browser
         self.url = url
-        self.browser.implicitly_wait(10)
 
     def open(self) -> None:
         """Open the given web page in the browser
@@ -28,19 +28,24 @@ class BasePage:
         """
         self.browser.get(self.url)
 
-    def is_element_present(self, how: str, what: str) -> bool:
+    def is_element_present(self, how: str, what: str, timeout=4) -> bool:
         """
 
         :param how:
         :param what:
+        :param timeout:
         :return:
         """
         try:
-            self.browser.find_element(how, what)
-        except NoSuchElementException:
+            WebDriverWait(self.browser, timeout).until(
+                ExpCond.presence_of_element_located((how, what)))
+        except TimeoutException:
             return False
 
         return True
+
+    def is_text_present(self, how: str, what: str, text: str) -> bool:
+        return text in self.browser.find_element(how, what).text
 
     def is_not_element_present(self, how, what, timeout=4):
         try:
@@ -75,9 +80,15 @@ class BasePage:
             print("No second alert presented")
 
     def go_to_login_page(self):
-        link = self.browser.find_element(*BasePageLocators.LOGIN_LINK)
-        link.click()
+        self._move_to_page(BasePageLocators.LOGIN_LINK)
+
+    def go_to_cart_page(self):
+        self._move_to_page(BasePageLocators.CART_BUTTON)
 
     def should_be_login_link(self):
         assert self.is_element_present(
             *BasePageLocators.LOGIN_LINK), "Login link is not presented"
+
+    def _move_to_page(self, selector: Sequence[str]) -> None:
+        link = self.browser.find_element(*selector)
+        link.click()
