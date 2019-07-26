@@ -1,8 +1,8 @@
-import pytest
-
 from .pages.product_page import ProductPage
 from .pages.login_page import LoginPage
 from .pages.cart_page import CartPage
+
+import pytest
 
 links = [
     "http://selenium1py.pythonanywhere.com/catalogue/coders-at-work_207/?promo=newYear2019",
@@ -13,6 +13,30 @@ offer_link_template = "http://selenium1py.pythonanywhere.com/catalogue/coders-at
 offer_links = [f"{offer_link_template}{i}" for i in range(0, 10)]
 
 product_link = "http://selenium1py.pythonanywhere.com/catalogue/the-shellcoders-handbook_209"
+
+
+class TestUserAddToCartFromProductPage:
+    @pytest.fixture(scope="function", autouse=True)
+    def setup(self, browser, faker):
+        product_page = ProductPage(browser, product_link)
+        product_page.open()
+        product_page.go_to_login_page()
+        login_page = LoginPage(browser, browser.current_url)
+        login_page.register_new_user(faker.email(), faker.password())
+        login_page.should_be_authorized_user()
+
+    def test_user_cant_see_success_message(self, browser) -> None:
+        product_page = ProductPage(browser, product_link)
+        product_page.open()
+        product_page.should_not_see_success_message_upon_opening_product_page()
+
+    @pytest.mark.parametrize("link", links)
+    def test_user_can_add_product_to_cart(self, browser, link: str) -> None:
+        product_page = ProductPage(browser, link)
+        product_page.open()
+        product_page.add_to_cart(True)
+        product_page.should_be_present_in_cart()
+        product_page.should_check_overall_cost()
 
 
 @pytest.mark.parametrize("link", links)
