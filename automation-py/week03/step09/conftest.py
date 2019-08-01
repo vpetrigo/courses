@@ -21,7 +21,8 @@ def browser(request):
 
     if browser_to_use == "chrome":
         options = ChromeOptions()
-        options.add_argument(f"--lang={language_to_use}")
+        # options.add_argument(f"--lang={language_to_use}")
+        options.add_experimental_option("prefs", {"intl.accept_languages": language_to_use})
         browser = webdriver.Chrome(options=options)
     elif browser_to_use == "firefox":
         profile = webdriver.FirefoxProfile()
